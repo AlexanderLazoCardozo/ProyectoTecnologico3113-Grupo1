@@ -1,0 +1,20 @@
+
+.inline-item {
+    border: 2px solid gray;
+    border-radius: 4px;
+    padding: 16px;
+}
+
+.margen-derecho, .ui.container.margen-derecho {
+    margin-right: 16px !important;
+}
+
+.ui.container.contenedor-busqueda {
+    display: flex;
+    flex-direction: row;
+    margin-top: 16px;
+}
+
+.ui.yellow.button {
+    color: black !important;
+}
