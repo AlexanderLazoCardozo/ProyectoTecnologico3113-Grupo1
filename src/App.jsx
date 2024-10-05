@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import ConexionBD from './tests/conexionBD'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/LoginNet/login';
 import Home from './pages/Home';
