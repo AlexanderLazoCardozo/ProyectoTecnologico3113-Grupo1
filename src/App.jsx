@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/LoginNet/login';
+import Login from './pages/LoginNet/Login';
 import Home from './pages/Home';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import firebaseApp from './firebase/credenciales';
