@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import './App.css'
 import ConexionBD from './tests/conexionBD'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
+import Login from './pages/LoginNet/login';
 import Home from './pages/Home';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import firebaseApp from './firebase/credenciales';
 import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import Clientes from './pages/Clientes';
+import Clientes from './pages/Clients/Clientes';
+import './App.css'
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -92,7 +92,7 @@ function App() {
 
               <>
 
-                {user.rol ==="Administrador" && (
+                {user.rol ==="Administrador" ? 
 
                   <>
 
@@ -100,8 +100,15 @@ function App() {
                     <Route path="/clientes" element={<Clientes user={user} /> } />
 
                   </>
+
+                  :
                   
-                ) }
+                  <>
+
+                    <Route path="/home" element={<Home user={user} /> } />
+                    
+                  </>
+                }
 
               </>
 

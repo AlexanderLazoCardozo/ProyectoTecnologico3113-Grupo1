@@ -3,9 +3,9 @@ import { Card, Header, Tab, Sidebar, Menu, Icon,Image } from 'semantic-ui-react'
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { NavLink } from 'react-router-dom'
 import firebaseApp from '../firebase/credenciales';
-import logoFogel from "./../images/logoFogel.png"
+import logoFogel from "./../assets/logo.png"
 
-const NavTab = ({children}) => {
+const NavTab = ({children , user}) => {
 
     const auth = getAuth(firebaseApp);
 
@@ -36,14 +36,25 @@ const NavTab = ({children}) => {
       >
        
         <Menu.Item as={NavLink} to="/home" style={{ fontSize: '14px' }}>
-            <Image src={logoFogel} style={{width:"80%", marginLeft:"10%"}}/>
+            <Image src={logoFogel} style={{width:"100%"}}/>
             Home
         </Menu.Item>
+
+        {user.rol != "Administrador" ?
+        
+          <>
+          
+          </>
+          :
+          <>
+            <Menu.Item as={NavLink} to="/clientes" style={{ fontSize: '12px' }}>
+              <Icon name='users'size='mini' />
+              Clientes
+            </Menu.Item>
+          </>
+        }
       
-        <Menu.Item as={NavLink} to="/clientes" style={{ fontSize: '12px' }}>
-            <Icon name='users'size='mini' />
-            Clientes
-        </Menu.Item>
+        
         
         <Menu.Item onClick={() => signOut(auth)} style={{ fontSize: '12px' }}>
             <Icon name='sign-out' size='mini' color='red'/>
