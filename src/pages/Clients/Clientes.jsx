@@ -69,11 +69,11 @@ const Clientes = ({user}) => {
                                 </p>
 
                                 <p>
-                                    <b>Documento:</b>  {cliente.dni}
+                                    <b>Documento:</b>  {cliente.documento}
                                 </p>
 
                                 <p>
-                                    <b>Tipo Documento:</b>  {cliente.documento}
+                                    <b>Tipo Documento:</b>  {cliente.tipoDoc}
                                 </p>
 
                                 <p>
