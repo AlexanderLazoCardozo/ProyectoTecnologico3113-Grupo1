@@ -35,9 +35,9 @@ const NavTab = ({children , user}) => {
         style={{ background: 'black'}}
       >
        
-        <Menu.Item as={NavLink} to="/home" style={{ fontSize: '14px' }}>
+        <Menu.Item as={NavLink} to="/logistica" style={{ fontSize: '14px' }}>
             <Image src={logoFogel} style={{width:"100%"}}/>
-            Home
+            Logistica
         </Menu.Item>
 
         {user.rol != "Administrador" ?
@@ -55,6 +55,11 @@ const NavTab = ({children , user}) => {
         }
       
         
+        <Menu.Item as={NavLink} to="/cotizaciones" style={{ fontSize: '14px' }}>
+          <Icon name='file alternate' size='mini'/>
+          Cotizaciones
+        </Menu.Item>
+
         
         <Menu.Item onClick={() => signOut(auth)} style={{ fontSize: '12px' }}>
             <Icon name='sign-out' size='mini' color='red'/>

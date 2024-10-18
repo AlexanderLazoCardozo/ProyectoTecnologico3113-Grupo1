@@ -10,13 +10,17 @@ const firestore = getFirestore(firebaseApp)
 
 const Clientes = ({user}) => {
     
-    const [contenido, setContenido] = useState([]);
+    const [datosCli, setDatosCli] = useState([]);
+    const [cotizacionesCli, setCotizacionesCli] = useState([])
+    const [equiposAdquiridos, setEquiposAdquiridos] = useState([])
+
     const [busquedaCli, setBusquedaCli] = useState([]);
 
     const dataCall = async () =>{
 
         try {
 
+            //LLamar datos del cliente
             const conectarBase = query(collection(firestore,"DataComercialOficial"), where("CodigoCli","==",busquedaCli ))
 
             const conectarSnapshot = await getDocs(conectarBase)
@@ -27,10 +31,40 @@ const Clientes = ({user}) => {
                 return doc.data()
 
             })
-            setContenido(documentosFind);
+            setDatosCli(documentosFind);
 
-            console.log("documentosFind",documentosFind)
+            console.log("Datos del Cliente",documentosFind)
 
+            //LLamar a sus cotizaciones
+            const conectarBaseCotiz = query(collection(firestore,"DataCotizaciones"), where("CodigoCli","==",busquedaCli ))
+
+            const conectarSnapshotCotiz = await getDocs(conectarBaseCotiz)
+
+
+            const documentosFindCotiz = conectarSnapshotCotiz.docs.map((doc) => {
+
+                return doc.data()
+
+            })
+            setCotizacionesCli(documentosFindCotiz);
+
+            console.log("Cotizaciones del cliente",documentosFindCotiz)
+
+
+            //Llamar a productos adquiridos 
+            const conectarBaseAdquir = query(collection(firestore,"EquipoOutbound"), where("CodigoCli","==",busquedaCli ))
+
+            const conectarSnapshotAdquir = await getDocs(conectarBaseAdquir)
+
+
+            const documentosFindAdquir = conectarSnapshotAdquir.docs.map((doc) => {
+
+                return doc.data()
+
+            })
+            setEquiposAdquiridos(documentosFindAdquir);
+
+            console.log("Equipos contratados del cliente",documentosFindAdquir)
             
         } catch (error) {
             console.log(error)
@@ -44,23 +78,23 @@ const Clientes = ({user}) => {
 
 
         <Card style={{margin:"20px", width:"auto", padding:"20px", fontFamily:"Poppins"}}>
-            <Container textAlign="left">
             <Header as="h1">Clientes</Header>
-            <Container>
-                <Input
-                className="margen-derecho"
-                onChange={(e) => setBusquedaCli(e.target.value)}
-                />
-                <Button color="yellow" onClick={dataCall}>
-                Buscar
-                </Button>
-            </Container>
-            {contenido.length > 0 ? (
+
+                <div>
+                    <Input
+                    className="margen-derecho"
+                    onChange={(e) => setBusquedaCli(e.target.value)}
+                    />
+                    <Button color="yellow" onClick={dataCall}>
+                    Buscar
+                    </Button>
+                </div>
+               
+            {datosCli.length > 0 ? (
                 <Container className="contenedor-busqueda">
                 <Container className="inline-item margen-derecho">
                     {
-                    /* Ejemplo de como renderizar data, modificar de acuerdo a necesidades */
-                    contenido.map((cliente) => {
+                    datosCli.map((cliente) => {
                         return (
 
                             <>
@@ -94,16 +128,7 @@ const Clientes = ({user}) => {
                     }
                 </Container>
                 <Container className="inline-item">
-                    {
-                    /* Ejemplo de como renderizar data, modificar de acuerdo a necesidades */
-                    contenido.map((cliente) => {
-                        return (
-                        <p>
-                            {cliente.nombre} {cliente.apellido}
-                        </p>
-                        );
-                    })
-                    }
+                   
                     <Card>
                         Cotizacion N° 1 15/07/2022
                     </Card>
@@ -122,7 +147,6 @@ const Clientes = ({user}) => {
                 </Container>
                 </Container>
             ) : null}
-            </Container>
         </Card>
         
 

@@ -8,6 +8,8 @@ import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, setDoc } fro
 import { useNavigate } from 'react-router-dom';
 import Clientes from './pages/Clients/Clientes';
 import './App.css'
+import Logistica from './pages/Logistic/Logistica';
+import Cotizaciones from './pages/Cotizaciones/Cotizaciones';
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -75,7 +77,7 @@ function App() {
 
   useEffect(() => {
     if (user && window.location.pathname === '/') {
-      navigate('/home');
+      navigate('/logistica');
     }
   }, [user, navigate]);
 
@@ -95,8 +97,9 @@ function App() {
 
                   <>
 
-                    <Route path="/home" element={<Home user={user} /> } />
+                    <Route path="/logistica" element={<Logistica user={user} /> } />
                     <Route path="/clientes" element={<Clientes user={user} /> } />
+                    <Route path="/cotizaciones" element={<Cotizaciones user={user} /> } />
 
                   </>
 
@@ -105,7 +108,8 @@ function App() {
                   <>
 
                     <Route path="/home" element={<Home user={user} /> } />
-                    
+                    <Route path="/cotizaciones" element={<Cotizaciones user={user} /> } />
+  
                   </>
                 }
 
