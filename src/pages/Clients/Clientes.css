@@ -1,20 +1,16 @@
-
-.inline-item {
-    border: 2px solid gray;
-    border-radius: 4px;
-    padding: 16px;
+.Contenedor-Clientes {
+    padding: 2% !important;   
+    width: 90%!important; 
+    max-width: 500px !important;      
 }
 
-.margen-derecho, .ui.container.margen-derecho {
-    margin-right: 16px !important;
+.lista-cliente{
+    font-size: large !important;
+    font-style: inherit !important;
 }
-
-.ui.container.contenedor-busqueda {
-    display: flex;
-    flex-direction: row;
-    margin-top: 16px;
-}
-
-.ui.yellow.button {
-    color: black !important;
+button:hover{
+    background-color: #000000  !important;
+    border: none !important;
+    transition: 0.8s ease !important;
+    color: #ffffff !important;
 }
