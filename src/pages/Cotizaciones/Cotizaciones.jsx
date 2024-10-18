@@ -5,6 +5,8 @@ import { collection, getDocs, getFirestore, query, where } from 'firebase/firest
 import { Button, Card, Container, Form, Header, Input, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react";
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import CotizacionesTabla from "./Tabla"
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"
 
 const firestore = getFirestore(firebaseApp)
 
@@ -17,6 +19,8 @@ const Cotizaciones = ({user}) => {
     const getDataCotizaciones = async() => {
 
         try {
+
+            toast.info("Conectando base...")
 
             const conectarData = query(collection(firestore, "DataCotizaciones"))
             
@@ -31,6 +35,8 @@ const Cotizaciones = ({user}) => {
             setDataCotizaciones(docsMap)
 
             console.log("Cotizaciones: ", docsMap)
+
+            toast.success("Datos obtenidos exitosamente.")
 
         } catch (error) {
             console.log(error)
@@ -265,15 +271,15 @@ const Cotizaciones = ({user}) => {
           <Header as="h1">Cotizaciones</Header>
           
           <div>
-            <Input
+            {/* <Input
               placeholder="Buscar cotización..."
               // onChange={(e) => setBusquedaCotizacion(e.target.value)}
               className="margen-derecho"
-            />
+            /> */}
             <Button color="yellow" 
             onClick={getDataCotizaciones}
             >
-              Buscar
+              Conectar Cotizaciones
             </Button>
 
             <Modal

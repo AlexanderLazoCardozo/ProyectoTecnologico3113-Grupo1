@@ -5,6 +5,8 @@ import data from "./mockData.json";
 import Tabla from "./Tabla";
 import { collection, getDocs, getFirestore, query } from 'firebase/firestore';
 import firebaseApp from '../../firebase/credenciales';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"
 
 
 const firestore = getFirestore(firebaseApp)
@@ -16,6 +18,8 @@ const Inventario = ({ user }) => {
   const getDataInventory = async () => {
 
     try {
+
+      toast.info("Conectando base...")
 
         const conectarData = query(collection(firestore, "EquipoInventory"))
         
@@ -30,6 +34,7 @@ const Inventario = ({ user }) => {
         setDataInventory(docsMap)
 
         console.log("Inventario: ", docsMap)
+        toast.success("Datos obtenidos exitosamente.")
 
     } catch (error) {
         console.log(error)
@@ -43,14 +48,14 @@ const Inventario = ({ user }) => {
       <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
           <Header as="h1">Inventario</Header>
           <div>
-            <Input
+            {/* <Input
               placeholder="Buscar en inventario..."
               // value={busquedaInventario}
               // onChange={(e) => setBusquedaInventario(e.target.value)}
               className="margen-derecho"
-            />
+            /> */}
             <Button color="yellow" onClick={getDataInventory}>
-              Buscar
+              Conectar Equipos
             </Button>
             {/* <Button
               color="black"

@@ -11,6 +11,8 @@ import './App.css'
 import Logistica from './pages/Logistic/Logistica';
 import Cotizaciones from './pages/Cotizaciones/Cotizaciones';
 import Inventario from './pages/Inventario/Inventario';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -74,6 +76,7 @@ function App() {
 
   return (
     <>
+     <ToastContainer />
         <Routes>
 
         <Route path="/" element={<Login  isLoading={isLoading} /> } />
