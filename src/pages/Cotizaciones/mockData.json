@@ -1,0 +1,12 @@
+[
+  {
+    "codigo": 1,
+    "fechaEmision": "2024-10-17T22:55:56.193Z",
+    "fechaVencimiento": "2024-10-27T22:55:56.193Z",
+    "clienteNumero": 123,
+    "clienteNombre": "Sancho Panza",
+    "MontoTotal": 456,
+    "estado": "Pendiente",
+    "acciones": "ver detalle"
+  }
+]

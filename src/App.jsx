@@ -1,43 +1,46 @@
-import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/LoginNet/Login';
-import Home from './pages/Home';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import firebaseApp from './firebase/credenciales';
-import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, setDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
-import Clientes from './pages/Clients/Clientes';
-import './App.css'
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/LoginNet/Login";
+import Home from "./pages/Home";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import firebaseApp from "./firebase/credenciales";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import Clientes from "./pages/Clients/Clientes";
+import Cotizaciones from "./pages/Cotizaciones/Cotizaciones";
+import Inventario from "./pages/Inventario/Inventario";
+import "./App.css";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 function App() {
-  
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  async function getRol(uid){
-
-
-    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`)
-    const docuCifradaRoles = await getDoc(docuRefProvisional)
+  async function getRol(uid) {
+    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`);
+    const docuCifradaRoles = await getDoc(docuRefProvisional);
 
     const infoNombres = docuCifradaRoles.data().nombres;
     const infoRol = docuCifradaRoles.data().rol;
 
-    const dato = [
-        infoNombres,
-        infoRol
-    ]
-    return dato;  
-    
+    const dato = [infoNombres, infoRol];
+    return dato;
   }
 
   async function setUserWithFirebaseAndRol(usuarioFirebase) {
-    setIsLoading(true); 
+    setIsLoading(true);
 
     getRol(usuarioFirebase.uid)
       .then((dato) => {
@@ -48,19 +51,17 @@ function App() {
           rol: dato[1],
         };
         setUser(userData);
-        console.log("Datos de rol:", userData); 
+        console.log("Datos de rol:", userData);
       })
       .catch((error) => {
         console.error("Error al obtener datos de rol:", error);
       })
       .finally(() => {
-        setIsLoading(false); 
+        setIsLoading(false);
       });
-  
   }
 
   useEffect(() => {
-   
     const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
       if (usuarioFirebase) {
         setUserWithFirebaseAndRol(usuarioFirebase);
@@ -72,57 +73,44 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-
   useEffect(() => {
-    if (user && window.location.pathname === '/') {
-      navigate('/home');
+    if (user && window.location.pathname === "/") {
+      navigate("/home");
     }
   }, [user, navigate]);
 
-
   return (
     <>
-        <Routes>
+      <Routes>
+        <Route path="/" element={<Login isLoading={isLoading} />} />
 
-        <Route path="/" element={<Login  isLoading={isLoading} /> } />
-
-          {user ? 
-            (
-
+        {user ? (
+          <>
+            {user.rol === "Administrador" ? (
               <>
-
-                {user.rol ==="Administrador" ? 
-
-                  <>
-
-                    <Route path="/home" element={<Home user={user} /> } />
-                    <Route path="/clientes" element={<Clientes user={user} /> } />
-
-                  </>
-
-                  :
-                  
-                  <>
-
-                    <Route path="/home" element={<Home user={user} /> } />
-                    
-                  </>
-                }
-
+                <Route path="/home" element={<Home user={user} />} />
+                <Route path="/clientes" element={<Clientes user={user} />} />
+                <Route
+                  path="/cotizaciones"
+                  element={<Cotizaciones user={user} />}
+                />
+                <Route
+                  path="/inventario"
+                  element={<Inventario user={user} />}
+                />
               </>
-
-            ): (
-
-              <Route path="*" element={<Navigate to="/" />} />
-            )
-        
-          }
-
-        
-        </Routes>
-     
+            ) : (
+              <>
+                <Route path="/home" element={<Home user={user} />} />
+              </>
+            )}
+          </>
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+      </Routes>
     </>
-  )
+  );
 }
 
 function AppWrapper() {
