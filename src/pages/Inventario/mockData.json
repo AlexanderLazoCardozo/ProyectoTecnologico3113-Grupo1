@@ -1,0 +1,13 @@
+[
+  {
+    "codigo": 1,
+    "nombreProducto": "Refrigerante",
+    "descripcion": "388 LITROS, TEMPERATURA 0°C A 5°C",
+    "cantidadDisponible": "10",
+    "precioUnitario": 270,
+    "valorTotal": 2700,
+    "fechaIngreso": "2024-10-17T22:55:56.193Z",
+    "estado": "Disponible",
+    "acciones": "ver detalle"
+  }
+]
