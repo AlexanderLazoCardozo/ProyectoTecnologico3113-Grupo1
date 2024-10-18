@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import NavTab from '../../components/NavTab'
 import firebaseApp from '../../firebase/credenciales';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
-import { Button, Card, Form, Header, Input, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react";
+import { Button, Card, Container, Form, Header, Input, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react";
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import CotizacionesTabla from "./Tabla"
 
 const firestore = getFirestore(firebaseApp)
 
@@ -158,7 +159,7 @@ const Cotizaciones = ({user}) => {
      
   return (
     <NavTab  user={user}>
-        <Card style={{margin:"20px", width:"auto", padding:"20px", fontFamily:"Poppins"}}>
+        {/* <Card style={{margin:"20px", width:"auto", padding:"20px", fontFamily:"Poppins"}}>
             <div>
                 <Header as="h1">Cotizaciones</Header>
                 <Button onClick={getDataCotizaciones} primary>Conectar Cotizaciones</Button>
@@ -259,32 +260,129 @@ const Cotizaciones = ({user}) => {
             </div>
 
 
-        </Card>
+        </Card> */}
         <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
-        <Container textAlign="left">
           <Header as="h1">Cotizaciones</Header>
-          <Container>
+          
+          <div>
             <Input
               placeholder="Buscar cotización..."
-              value={busquedaCotizacion}
-              onChange={(e) => setBusquedaCotizacion(e.target.value)}
+              // onChange={(e) => setBusquedaCotizacion(e.target.value)}
               className="margen-derecho"
             />
-            <Button color="yellow" onClick={handleBuscar}>
+            <Button color="yellow" 
+            onClick={getDataCotizaciones}
+            >
               Buscar
             </Button>
-            <Button
-              color="black"
-              onClick={handleNuevo}
-              style={{ marginLeft: "10px" }}
+
+            <Modal
+                onClose={() => setOpen(false)}
+                onOpen={() => setOpen(true)}
+                open={open}
+                trigger={
+                  <Button
+                    color="black"
+                    // onClick={handleNuevo}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    Nueva Cotización
+                  </Button>
+                }
             >
-              Nuevo
-            </Button>
-          </Container>
+                <ModalHeader>Ingresar Datos</ModalHeader>
+
+                <ModalContent >
+
+                    <Form>
+                        <Form.Input 
+                        label="RUC"
+                        placeholder="Ingresar documento del cliente"
+                        value={searchClienteRUC}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        />
+                    </Form>
+
+                    <br />
+
+                    {searchResults.map((client) => (
+                        <div key={client.CodigoCli} onClick={() => handleSelectClient(client)}>
+                        <Table celled>
+                            <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell>Cliente Existente - Se le generara una nueva cotización</Table.HeaderCell>
+                            </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                            <Table.Row>
+                                <Table.Cell>{client.nombres} {client.apellidos}</Table.Cell>
+                            </Table.Row>
+                            </Table.Body>
+                        </Table>
+                        <Form>
+                            <Form.Group widths="equal">
+                            <Form.Input
+                                label='Código'
+                                placeholder='CódigoCli'
+                                value={client.CodigoCli}
+                                id="code"
+                                readOnly
+                            />
+                            <Form.Input
+                                label='Id de cliente'
+                                placeholder="Id de cliente"
+                                value={client.UID}
+                                id="Documento"
+                                readOnly
+                            />
+                            </Form.Group>
+                        </Form>
+                        </div>
+                    ))}
+
+                    <br />
+
+                    Agregar Equipo Solicitado:
+                    <br />
+
+                        <>
+                            <label htmlFor="equipoSelect">Seleccionar Equipo:</label>
+                            <select id="equipoSelect" value={selectedEquipo} onChange={handleSelectChange}>
+                                <option value="">Seleccione un equipo</option>
+                                {equipos.map(equipo => (
+                                <option key={equipo.id} value={equipo.codigoEquipo}>
+                                    {equipo.codigoEquipo}
+                                </option>
+                                ))}
+                            </select>
+
+                            <label htmlFor="stockInput">Stock:</label>
+                            <input id="stockInput" type="text" value={stock} disabled />
+                        </>
+                
+                
+                
+                </ModalContent>
+                
+                <ModalActions>
+                    <Button color='black' onClick={() => setOpen(false)}>
+                    Cerrar
+                    </Button>
+                    <Button
+                    content="Crear"
+                    labelPosition='right'
+                    icon='checkmark'
+                    onClick={() => setOpen(false)}
+                    positive
+                    />
+                </ModalActions>
+            </Modal>
+            
+          </div>
+          <br />
           <Container>
-            <CotizacionesTabla data={data} />
+            <CotizacionesTabla data={dataCotizaciones} />
           </Container>
-        </Container>
       </Card>
     </NavTab>
   )

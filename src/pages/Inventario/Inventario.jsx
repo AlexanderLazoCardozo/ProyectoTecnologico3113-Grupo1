@@ -3,47 +3,67 @@ import NavTab from "../../components/NavTab";
 import { Card, Container, Header, Input, Button } from "semantic-ui-react";
 import data from "./mockData.json";
 import Tabla from "./Tabla";
+import { collection, getDocs, getFirestore, query } from 'firebase/firestore';
+import firebaseApp from '../../firebase/credenciales';
+
+
+const firestore = getFirestore(firebaseApp)
 
 const Inventario = ({ user }) => {
-  const [busquedaInventario, setBusquedaInventario] = useState("");
 
-  const handleBuscar = () => {
-    // Aquí puedes implementar la lógica para buscar en el inventario
-    console.log("Buscar en inventario:", busquedaInventario);
-  };
+  const [dataInventory, setDataInventory] = useState([])
 
-  const handleNuevo = () => {
-    // Aquí puedes implementar la lógica para crear un nuevo elemento en el inventario
-    console.log("Crear nuevo elemento en inventario");
-  };
+  const getDataInventory = async () => {
+
+    try {
+
+        const conectarData = query(collection(firestore, "EquipoInventory"))
+        
+        const snapData = await getDocs(conectarData)
+
+        const docsMap = snapData.docs.map((doc) => {
+
+            return doc.data()
+
+        })
+
+        setDataInventory(docsMap)
+
+        console.log("Inventario: ", docsMap)
+
+    } catch (error) {
+        console.log(error)
+    }
+
+ }
+
 
   return (
     <NavTab user={user}>
       <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
-        <Container textAlign="left">
           <Header as="h1">Inventario</Header>
-          <Container>
+          <div>
             <Input
               placeholder="Buscar en inventario..."
-              value={busquedaInventario}
-              onChange={(e) => setBusquedaInventario(e.target.value)}
+              // value={busquedaInventario}
+              // onChange={(e) => setBusquedaInventario(e.target.value)}
               className="margen-derecho"
             />
-            <Button color="yellow" onClick={handleBuscar}>
+            <Button color="yellow" onClick={getDataInventory}>
               Buscar
             </Button>
-            <Button
+            {/* <Button
               color="black"
               onClick={handleNuevo}
               style={{ marginLeft: "10px" }}
             >
               Nuevo
-            </Button>
-          </Container>
+            </Button> */}
+          </div>
+          <br />
           <Container>
-            <Tabla data={data} />
+            <Tabla data={dataInventory} />
           </Container>
-        </Container>
       </Card>
     </NavTab>
   );

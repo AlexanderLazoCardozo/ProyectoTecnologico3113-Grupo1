@@ -10,6 +10,7 @@ import Clientes from './pages/Clients/Clientes';
 import './App.css'
 import Logistica from './pages/Logistic/Logistica';
 import Cotizaciones from './pages/Cotizaciones/Cotizaciones';
+import Inventario from './pages/Inventario/Inventario';
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -86,7 +87,7 @@ function App() {
 
                   <>
 
-                    <Route path="/logistica" element={<Logistica user={user} /> } />
+                    <Route path="/logistica" element={<Inventario user={user} /> } />
                     <Route path="/clientes" element={<Clientes user={user} /> } />
                     <Route path="/cotizaciones" element={<Cotizaciones user={user} /> } />
 
@@ -103,8 +104,6 @@ function App() {
                 }
 
               </>
-            )}
-          </>
         ) : (
           <Route path="*" element={<Navigate to="/" />} />
         )}
