@@ -257,8 +257,35 @@ const Cotizaciones = ({user}) => {
                 </Modal>
                 
             </div>
-        </Card>
 
+
+        </Card>
+        <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
+        <Container textAlign="left">
+          <Header as="h1">Cotizaciones</Header>
+          <Container>
+            <Input
+              placeholder="Buscar cotización..."
+              value={busquedaCotizacion}
+              onChange={(e) => setBusquedaCotizacion(e.target.value)}
+              className="margen-derecho"
+            />
+            <Button color="yellow" onClick={handleBuscar}>
+              Buscar
+            </Button>
+            <Button
+              color="black"
+              onClick={handleNuevo}
+              style={{ marginLeft: "10px" }}
+            >
+              Nuevo
+            </Button>
+          </Container>
+          <Container>
+            <CotizacionesTabla data={data} />
+          </Container>
+        </Container>
+      </Card>
     </NavTab>
   )
 }

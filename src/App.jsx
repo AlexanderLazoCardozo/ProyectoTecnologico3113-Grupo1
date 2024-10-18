@@ -15,31 +15,24 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 function App() {
-  
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  async function getRol(uid){
-
-
-    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`)
-    const docuCifradaRoles = await getDoc(docuRefProvisional)
+  async function getRol(uid) {
+    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`);
+    const docuCifradaRoles = await getDoc(docuRefProvisional);
 
     const infoNombres = docuCifradaRoles.data().nombres;
     const infoRol = docuCifradaRoles.data().rol;
 
-    const dato = [
-        infoNombres,
-        infoRol
-    ]
-    return dato;  
-    
+    const dato = [infoNombres, infoRol];
+    return dato;
   }
 
   async function setUserWithFirebaseAndRol(usuarioFirebase) {
-    setIsLoading(true); 
+    setIsLoading(true);
 
     getRol(usuarioFirebase.uid)
       .then((dato) => {
@@ -50,19 +43,17 @@ function App() {
           rol: dato[1],
         };
         setUser(userData);
-        console.log("Datos de rol:", userData); 
+        console.log("Datos de rol:", userData);
       })
       .catch((error) => {
         console.error("Error al obtener datos de rol:", error);
       })
       .finally(() => {
-        setIsLoading(false); 
+        setIsLoading(false);
       });
-  
   }
 
   useEffect(() => {
-   
     const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
       if (usuarioFirebase) {
         setUserWithFirebaseAndRol(usuarioFirebase);
@@ -74,13 +65,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-
   useEffect(() => {
     if (user && window.location.pathname === '/') {
       navigate('/logistica');
     }
   }, [user, navigate]);
-
 
   return (
     <>
@@ -114,19 +103,14 @@ function App() {
                 }
 
               </>
-
-            ): (
-
-              <Route path="*" element={<Navigate to="/" />} />
-            )
-        
-          }
-
-        
-        </Routes>
-     
+            )}
+          </>
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+      </Routes>
     </>
-  )
+  );
 }
 
 function AppWrapper() {
