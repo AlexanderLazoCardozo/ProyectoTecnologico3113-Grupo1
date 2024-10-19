@@ -2,8 +2,23 @@ import React from 'react';
 import './DetalleCotizacion.css';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import LogoEmpresa from "./../../assets/fogelrs.png"
+import {
+  ModalHeader,
+  ModalDescription,
+  ModalContent,
+  ModalActions,
+  Button,
+  Header,
+  Image,
+  Modal,
+} from 'semantic-ui-react'
 
-const DetalleCotizacion = () => {
+const DetalleCotizacion = ({cotizacion}) => {
+  console.log("cotizac", cotizacion)
+
+  const [open, setOpen] = React.useState(false)
+
   const fecha = "miércoles, 16 de octubre de 2024";
   const cliente = "GIAN FRANCO LOZANO PEÑA";
   const ruc = "10727971403";
@@ -29,44 +44,58 @@ const DetalleCotizacion = () => {
     },
   ];
 
-  const subtotal = productos.reduce((acc, product) => acc + product.total, 0);
+  const subtotal = cotizacion.Equipos.reduce((acc, product) => acc + product.total, 0);
   const igv = subtotal * 0.18;
   const total = subtotal + igv;
 
   return (
+    <Modal
+    style={{width:"auto", alignItems:"center", margin:"auto"}}
+    onClose={() => setOpen(false)}
+    onOpen={() => setOpen(true)}
+    open={open}
+    trigger={<Button>Ver Detalle</Button>}
+  >
+    <ModalHeader>Detalle Cotización</ModalHeader>
     <div>
       <img
-        src="/src/assets/fogelrs.png"
+        src={LogoEmpresa}
         alt="Logo de la Empresa"
         className="logo"
       />
-      <p className="date">{fecha}</p>
-
+      {/* Mientras no sea dinamico no lo incluyamos tiene que salir segun la fecha emision
+      <p className="date">{fecha}</p> */}
+      <p className="date"> Creación: {cotizacion.FechaEmision}</p>
       <div className="cotizacion-container">
-        <p className="cotizacion-text">{cotizacionTexto}</p>
+        <p className="cotizacion-text">COTIZACION Nº {cotizacion.NumeroCotizacion}</p>
       </div>
 
       <div className="vencimiento-container">
-        <p className="vencimiento-text">{vencimientoTexto}</p>
+        <p className="vencimiento-text">Vencimiento: {cotizacion.FechaVencimiento}</p>
       </div>
 
       <p className="section">Señores</p>
-      <p className="section">CLIENTE: {cliente}</p>
-      <p className="section">RUC: {ruc}</p>
-      <p className="section">{direccion}</p>
+      <p className="section">CLIENTE: {cotizacion.Cliente.nombres} </p>
+      <p className="section">RUC: {cotizacion.Cliente.ruc}</p>
+      <p className="section">{cotizacion.Cliente.direccion}</p>
 
       <p className="section2">En atención a su solicitud, sírvanse encontrar nuestra Cotización según lo requerido.</p>
       <p className="section3">Quedamos a la espera de su amable respuesta confirmándonos su aceptación.</p>
 
       <div className="datatable-container">
-        <DataTable value={productos} showGridlines>
-          <Column field="codigo" header="Código" />
-          <Column field="descripcion" header="Descripción" />
-          <Column field="cantidad" header="Cantidad" />
-          <Column field="unidad" header="Unidad" />
-          <Column field="precio" header="Precio" />
-          <Column field="total" header="Total" />
-        </DataTable>
+      <DataTable value={cotizacion.Equipos} showGridlines>
+            <Column field="codigoEquipo" header="Código" />
+            <Column 
+              field="descripcion" 
+              header="Descripción" 
+              style={{ width: '300px' }}
+              bodyStyle={{ whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis' }} 
+            />            
+            <Column field="cantidad" header="Cantidad" />
+            <Column field="unidad" header="Unidad" />
+            <Column field="precioUnitario" header="Precio" body={(data) => `S/. ${parseFloat(data.precioUnitario).toFixed(2)}`} />
+            <Column field="total" header="Total" body={(data) => `S/. ${parseFloat(data.total).toFixed(2)}`} />
+          </DataTable>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginRight: '10px' }}>
           <div style={{ flexDirection: 'column' }}>
@@ -138,6 +167,18 @@ const DetalleCotizacion = () => {
       </div>
 
     </div>
+    <ModalActions>
+     
+      <Button
+        content="Cerrar"
+        labelPosition='right'
+        icon='x'
+        onClick={() => setOpen(false)}
+        negative
+      />
+    </ModalActions>
+  </Modal>
+    
   );
 }
 

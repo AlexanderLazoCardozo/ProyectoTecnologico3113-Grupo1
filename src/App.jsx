@@ -11,6 +11,10 @@ import './App.css'
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import Cotizaciones from './pages/Cotizaciones/Cotizaciones';
+import Inventario from './pages/Inventario/Inventario';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -78,7 +82,7 @@ function App() {
 
   useEffect(() => {
     if (user && window.location.pathname === '/') {
-      navigate('/home');
+      navigate('/logistica');
     }
   }, [user, navigate]);
 

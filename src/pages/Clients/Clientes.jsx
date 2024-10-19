@@ -8,6 +8,7 @@ import { Container, Grid, Segment, Header, Icon, Input, Card, List, Button, Moda
 import DataTable from 'react-data-table-component';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css"
+import DetalleCotizacion from '../DetalleCotizacion/DetalleCotizacion';
 
 const firestore = getFirestore(firebaseApp);
 
@@ -345,6 +346,7 @@ const Clientes = ({user}) => {
                       )}
                     </Grid.Column>
                   </Grid.Row>
+                  <DetalleCotizacion cotizacion={cotizacionSeleccionada} />
                 </Grid>
               </Segment>
             </Modal.Content>

@@ -100,7 +100,7 @@
     color: red;
     font-size: 25px;
     font-weight: bold;
-    margin-right: 820px;
+    margin-right:30px;
   }
   .descripcion {
     flex-direction: column; 
@@ -116,7 +116,7 @@
     margin: 0;
   }
   .barra {
-    width: 58%; 
+    width:95%; 
     height: 3px; 
     background-color: black; 
     margin-bottom: 5px; 

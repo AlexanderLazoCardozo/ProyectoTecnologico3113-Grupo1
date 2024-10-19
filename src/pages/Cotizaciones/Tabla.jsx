@@ -1,4 +1,5 @@
 import { Button } from "semantic-ui-react";
+import DetalleCotizacion from "../DetalleCotizacion/DetalleCotizacion";
 
 const CotizacionesTabla = ({ data }) => {
 
@@ -32,7 +33,7 @@ const CotizacionesTabla = ({ data }) => {
             <td>{item.MontoTotal}</td>
             {/* <td>{item.estado}</td> */}
             <td>
-              <Button>Ver Detalle</Button>
+              <DetalleCotizacion cotizacion={item} />
             </td>
           </tr>
         ))}
