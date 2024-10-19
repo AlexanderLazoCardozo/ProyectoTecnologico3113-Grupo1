@@ -1,21 +1,31 @@
-import React, { useState } from 'react'
-import { Card, Header, Tab, Sidebar, Menu, Icon,Image } from 'semantic-ui-react';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { NavLink } from 'react-router-dom'
-import firebaseApp from '../firebase/credenciales';
-import logoFogel from "./../assets/logo.png"
+import React, { useState } from "react";
+import {
+  Card,
+  Header,
+  Tab,
+  Sidebar,
+  Menu,
+  Icon,
+  Image,
+} from "semantic-ui-react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { NavLink } from "react-router-dom";
+import firebaseApp from "../firebase/credenciales";
+import logoFogel from "./../assets/logo.png";
 
-const NavTab = ({children , user}) => {
+const NavTab = ({ children, user }) => {
+  const auth = getAuth(firebaseApp);
 
-    const auth = getAuth(firebaseApp);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
 
-    const [sidebarVisible, setSidebarVisible] = useState(true);
+  const handleSidebarToggle = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
 
-    const handleSidebarToggle = () => {
-        setSidebarVisible(!sidebarVisible);
-      };
-
-      
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
     <Sidebar.Pushable
@@ -35,9 +45,9 @@ const NavTab = ({children , user}) => {
         style={{ background: 'black'}}
       >
        
-        <Menu.Item as={NavLink} to="/home" style={{ fontSize: '14px' }}>
+        <Menu.Item as={NavLink} to="/logistica" style={{ fontSize: '14px' }}>
             <Image src={logoFogel} style={{width:"100%"}}/>
-            Home
+            Logistica
         </Menu.Item>
 
         {user.rol != "Administrador" ?
@@ -55,30 +65,31 @@ const NavTab = ({children , user}) => {
         }
       
         
+        <Menu.Item as={NavLink} to="/cotizaciones" style={{ fontSize: '14px' }}>
+          <Icon name='file alternate' size='mini'/>
+          Cotizaciones
+        </Menu.Item>
+
         
         <Menu.Item onClick={() => signOut(auth)} style={{ fontSize: '12px' }}>
             <Icon name='sign-out' size='mini' color='red'/>
             Cerrar Sesión
-        </Menu.Item>
-        
-      </Sidebar>
-      
-      <Sidebar.Pusher>
-            <Icon
-              name="bars"
-              size="big"
-              style={{ cursor: 'pointer', marginTop: '10px', marginLeft:"5px" }}
-              onClick={handleSidebarToggle}
-            />
+          </Menu.Item>
+        </Sidebar>
 
+        <Sidebar.Pusher>
+          <Icon
+            name="bars"
+            size="big"
+            style={{ cursor: "pointer", marginTop: "10px", marginLeft: "5px" }}
+            onClick={handleSidebarToggle}
+          />
 
-            {children}
+          {children}
+        </Sidebar.Pusher>
+      </Sidebar.Pushable>
+    </div>
+  );
+};
 
-
-      </Sidebar.Pusher>
-    </Sidebar.Pushable>
-  </div>
-  )
-}
-
-export default NavTab
+export default NavTab;

@@ -12,13 +12,23 @@
   "dependencies": {
     "firebase": "^10.13.2",
     "prettier": "^3.3.3",
+<<<<<<< HEAD
     "primeicons": "^7.0.0",
     "primereact": "^10.8.4",
+=======
+>>>>>>> main
     "react": "^18.3.1",
+    "react-data-table-component": "^7.6.2",
     "react-dom": "^18.3.1",
+<<<<<<< HEAD
     "react-router-dom": "^6.27.0",
+=======
+    "react-router-dom": "^6.26.2",
+    "react-toastify": "^10.0.6",
+>>>>>>> main
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
+    "styled-components": "^6.1.13",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
