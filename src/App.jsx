@@ -105,22 +105,22 @@ const Formulario = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex-container">
-                        <div className="flex-item">
+                    
+                        <div className="field">
                             <label htmlFor="nombres">Nombres</label>
                             <InputText id="nombres" value={nombres} onChange={(e) => setNombres(e.target.value)} required />
                         </div>
 
-                        <div className="flex-item">
+                        <div className="field">
                             <label htmlFor="apellidoPaterno">Apellido Paterno</label>
                             <InputText id="apellidoPaterno" value={apellidoPaterno} onChange={(e) => setApellidoPaterno(e.target.value)} required />
                         </div>
 
-                        <div className="flex-item">
+                        <div className="field">
                             <label htmlFor="apellidoMaterno">Apellido Materno</label>
                             <InputText id="apellidoMaterno" value={apellidoMaterno} onChange={(e) => setApellidoMaterno(e.target.value)} required />
                         </div>
-                    </div>
+                    
                 </div>
                 <div className="field">
                     <label htmlFor="direccionCliente">Dirección</label>
