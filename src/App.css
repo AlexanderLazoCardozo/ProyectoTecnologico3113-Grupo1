@@ -1,4 +1,9 @@
-
+/* app.css */
+body, html {
+    height: 100%;
+    
+    margin: 10%; 
+}
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -11,35 +16,172 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-
-*:not(i) {
-  font-family: 'Poppins', sans-serif !important;
+.container {
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    height: 100%;
 }
 
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.logoJav {
+  width: 35%;       /* Ocupa el ancho completo del contenedor */
+  height: auto;      /* Mantiene la proporción de la imagen */
+  margin-bottom: 5px; /* Espacio debajo de la imagen */
+  display: block;    /* Asegura que la imagen se comporte como un bloque */
 }
 
 .card {
-  padding: 2em;
+    background-color: rgb(247, 247, 247); 
+    border-radius: 8px;
+    border: 2px solid #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+    padding: 20px; 
+    margin: 20px;    
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.read-the-docs {
-  color: #888;
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
 }
 
+.flex-item {
+    display: flex;
+    flex-direction: column; 
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 0px;
+  font-size: 100%;
+}
+
+h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.field {
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.p-button {
+  margin-top: 16px;
+  border-color: #333;
+  
+}
+
+.p-button:hover {
+  margin-top: 16px;
+  background-color: #d8d8d8;
+  border-color: #333;
+}
+
+.p-grid {
+  margin-bottom: 20px;
+}
+
+.p-inputtext {
+
+  width: 100%;
+
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-item {
+  margin-right: 16px; 
+  background-color: #f4f7f9;
+  flex-grow: 1; 
+}
+
+
+.p-dropdown {
+  width: 100%;
+  margin-bottom: 80px;
+  border: 1px solid #333;
+  border-radius: 5px;
+}
+
+
+.p-dropdown:hover {
+  background-color: white; 
+}
+
+
+.p-dropdown-panel .p-dropdown-item {
+  padding: 10px; 
+}
+
+.p-dropdown-panel .p-dropdown-item:hover {
+  background-color: white;
+  color: black; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+.p-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.p-table th, 
+.p-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  
+}
+
+
+.p-table th:nth-child(1), 
+.p-table td:nth-child(1) {
+  width: 20%; 
+}
+.p-table th:nth-child(3), 
+.p-table td:nth-child(3) {
+  width: 10%; 
+}
+
+.p-table th:nth-child(3),
+.p-table td:nth-child(3) {
+  width: 10%; 
+}
+
+.p-table th:nth-child(4),
+.p-table td:nth-child(4) {
+  width: 10%; 
+}
+
+.p-table th:nth-child(5),
+.p-table td:nth-child(5) {
+  width: 10%; 
+}
+
+.p-table th:nth-child(6),
+.p-table td:nth-child(6) {
+  width: 10%; 
+}
+
+.p-toast {
+  z-index: 1000;
+}
+
+
+.yellow-button {
+  background-color: rgb(255, 255, 0);
+  color: black; 
+  border-color: #333;
+}
+
+.yellow-button:hover {
+  background-color: rgb(255, 234, 41);
+}
 table {
   width: 100%;
   border-collapse: collapse;
