@@ -1,0 +1,140 @@
+
+  .logo {
+    width: 500px;
+  }
+  
+  .date {
+    margin: 0 0 10px 30px;
+  }
+  
+  .section {
+    margin: 1px 30px; 
+  }
+
+  .section2 {
+    margin-top: 30px;
+    margin-bottom: 0px;
+    margin-left: 30px;
+  }
+  .section3 {
+    margin-left: 30px;
+  }
+  .cotizacion-container {
+    display: flex;         
+    justify-content: center; 
+  }
+  
+  .cotizacion-text {
+    font-weight: bold; 
+  }
+  .vencimiento-container {
+    display: flex;    
+    justify-content: center; 
+  }
+  
+  .vencimiento-text {
+    font-weight: normal;   
+  }
+  .datatable-container {
+    margin: 0 30px;  
+    max-width: 1060px; 
+  }
+  .cuentas-bancarias {
+    margin-top: 10px;
+    margin-left: 30px;
+    text-align: left;
+  }
+  
+  .cuentas-bancarias p {
+    margin: 0; 
+  }
+  
+  .subrayado {
+    text-decoration: underline; 
+  }
+  .observaciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 30px;
+  }
+  
+  .observaciones-text {
+    text-align: left;
+  }
+  
+  .observaciones-title {
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .observaciones-highlight {
+    margin: 0;
+    color: red;
+  }
+  
+  .observaciones-center {
+    margin: 0;
+    color: red;
+    text-align: center;
+  }
+  .informacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 30px;
+  }
+  
+  .informacion-text {
+    text-align: left;
+  }
+  
+  .informacion-item {
+    margin-top: 10px;
+    margin: 0;
+  }
+  
+  .garantia {
+    color: red;
+    font-size: 25px;
+    font-weight: bold;
+    margin-right: 820px;
+  }
+  .descripcion {
+    flex-direction: column; 
+    margin-top: 10px;
+    margin-left: 30px;
+  }
+  
+  .descripcion-text {
+    text-align: left;
+  }
+  
+  .descripcion-parrafo {
+    margin: 0;
+  }
+  .barra {
+    width: 58%; 
+    height: 3px; 
+    background-color: black; 
+    margin-bottom: 5px; 
+  }
+  
+  .contacto {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: flex-start; 
+    margin-top: 20px;
+    margin-left: 30px;
+  }
+  
+  .contacto-text {
+    text-align: left;
+  }
+  
+  .contacto-item {
+    margin: 0;
+  }

@@ -8,34 +8,39 @@ import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, setDoc } fro
 import { useNavigate } from 'react-router-dom';
 import Clientes from './pages/Clients/Clientes';
 import './App.css'
-import Logistica from './pages/Logistic/Logistica';
-import Cotizaciones from './pages/Cotizaciones/Cotizaciones';
-import Inventario from './pages/Inventario/Inventario';
-import { ToastContainer, toast } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css"
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 function App() {
+  
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
 
   const navigate = useNavigate();
 
-  async function getRol(uid) {
-    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`);
-    const docuCifradaRoles = await getDoc(docuRefProvisional);
+  async function getRol(uid){
+
+
+    const docuRefProvisional = doc(firestore, `usersAndRoles/${uid}`)
+    const docuCifradaRoles = await getDoc(docuRefProvisional)
 
     const infoNombres = docuCifradaRoles.data().nombres;
     const infoRol = docuCifradaRoles.data().rol;
 
-    const dato = [infoNombres, infoRol];
-    return dato;
+    const dato = [
+        infoNombres,
+        infoRol
+    ]
+    return dato;  
+    
   }
 
   async function setUserWithFirebaseAndRol(usuarioFirebase) {
-    setIsLoading(true);
+    setIsLoading(true); 
 
     getRol(usuarioFirebase.uid)
       .then((dato) => {
@@ -46,17 +51,19 @@ function App() {
           rol: dato[1],
         };
         setUser(userData);
-        console.log("Datos de rol:", userData);
+        console.log("Datos de rol:", userData); 
       })
       .catch((error) => {
         console.error("Error al obtener datos de rol:", error);
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsLoading(false); 
       });
+  
   }
 
   useEffect(() => {
+   
     const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
       if (usuarioFirebase) {
         setUserWithFirebaseAndRol(usuarioFirebase);
@@ -68,11 +75,13 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+
   useEffect(() => {
     if (user && window.location.pathname === '/') {
-      navigate('/logistica');
+      navigate('/home');
     }
   }, [user, navigate]);
+
 
   return (
     <>
