@@ -7,6 +7,7 @@ import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import CotizacionesTabla from "./Tabla"
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css"
+import NuevaCotizacion from './NuevaCotizacion';
 
 const firestore = getFirestore(firebaseApp)
 
@@ -127,7 +128,7 @@ const Cotizaciones = ({user}) => {
                     collection(firestore, "DataComercialOficial"),
                     orderBy("CodigoCli", "desc"),
                     limit(1) 
-                );
+                );     
 
                 const snapshot = await getDocs(q);
                 let lastCodigoCli = "CLI0000"; 
@@ -165,108 +166,7 @@ const Cotizaciones = ({user}) => {
      
   return (
     <NavTab  user={user}>
-        {/* <Card style={{margin:"20px", width:"auto", padding:"20px", fontFamily:"Poppins"}}>
-            <div>
-                <Header as="h1">Cotizaciones</Header>
-                <Button onClick={getDataCotizaciones} primary>Conectar Cotizaciones</Button>
-                <Modal
-                onClose={() => setOpen(false)}
-                onOpen={() => setOpen(true)}
-                open={open}
-                trigger={<Button onClick={getDataCotizaciones} positive> Agregar </Button>}
-                >
-                    <ModalHeader>Ingresar Datos</ModalHeader>
-
-                    <ModalContent >
-
-                        <Form>
-                            <Form.Input 
-                            label="RUC"
-                            placeholder="Ingresar documento del cliente"
-                            value={searchClienteRUC}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            />
-                        </Form>
-
-                        <br />
-
-                        {searchResults.map((client) => (
-                            <div key={client.CodigoCli} onClick={() => handleSelectClient(client)}>
-                            <Table celled>
-                                <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Cliente Existente - Se le generara una nueva cotización</Table.HeaderCell>
-                                </Table.Row>
-                                </Table.Header>
-                                <Table.Body>
-                                <Table.Row>
-                                    <Table.Cell>{client.nombres} {client.apellidos}</Table.Cell>
-                                </Table.Row>
-                                </Table.Body>
-                            </Table>
-                            <Form>
-                                <Form.Group widths="equal">
-                                <Form.Input
-                                    label='Código'
-                                    placeholder='CódigoCli'
-                                    value={client.CodigoCli}
-                                    id="code"
-                                    readOnly
-                                />
-                                <Form.Input
-                                    label='Id de cliente'
-                                    placeholder="Id de cliente"
-                                    value={client.UID}
-                                    id="Documento"
-                                    readOnly
-                                />
-                                </Form.Group>
-                            </Form>
-                            </div>
-                        ))}
-
-                        <br />
-
-                        Agregar Equipo Solicitado:
-                        <br />
-
-                            <>
-                                <label htmlFor="equipoSelect">Seleccionar Equipo:</label>
-                                <select id="equipoSelect" value={selectedEquipo} onChange={handleSelectChange}>
-                                    <option value="">Seleccione un equipo</option>
-                                    {equipos.map(equipo => (
-                                    <option key={equipo.id} value={equipo.codigoEquipo}>
-                                        {equipo.codigoEquipo}
-                                    </option>
-                                    ))}
-                                </select>
-
-                                <label htmlFor="stockInput">Stock:</label>
-                                <input id="stockInput" type="text" value={stock} disabled />
-                            </>
-                    
-                    
-                    
-                    </ModalContent>
-                    
-                    <ModalActions>
-                        <Button color='black' onClick={() => setOpen(false)}>
-                        Cerrar
-                        </Button>
-                        <Button
-                        content="Crear"
-                        labelPosition='right'
-                        icon='checkmark'
-                        onClick={() => setOpen(false)}
-                        positive
-                        />
-                    </ModalActions>
-                </Modal>
-                
-            </div>
-
-
-        </Card> */}
+       
         <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
           <Header as="h1">Cotizaciones</Header>
           
@@ -282,7 +182,10 @@ const Cotizaciones = ({user}) => {
               Conectar Cotizaciones
             </Button>
 
-            <Modal
+            <NuevaCotizacion />
+            
+
+            {/* <Modal
                 onClose={() => setOpen(false)}
                 onOpen={() => setOpen(true)}
                 open={open}
@@ -382,7 +285,7 @@ const Cotizaciones = ({user}) => {
                     positive
                     />
                 </ModalActions>
-            </Modal>
+            </Modal> */}
             
           </div>
           <br />

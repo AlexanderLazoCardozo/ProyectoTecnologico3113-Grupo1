@@ -15,7 +15,6 @@ import {
 } from 'semantic-ui-react'
 
 const DetalleCotizacion = ({cotizacion}) => {
-  console.log("cotizac", cotizacion)
 
   const [open, setOpen] = React.useState(false)
 

@@ -1,9 +1,4 @@
-/* app.css */
-body, html {
-    height: 100%;
-    
-    margin: 10%; 
-}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -37,7 +32,7 @@ body, html {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
     padding: 20px; 
     margin: 20px;    
-    width: 100%;
+    width: 95%;
     box-sizing: border-box;
 }
 
