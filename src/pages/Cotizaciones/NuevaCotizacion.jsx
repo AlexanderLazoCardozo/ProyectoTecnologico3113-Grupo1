@@ -405,7 +405,7 @@ const NuevaCotizacion = () => {
                 <div className="p-grid">
                     <div className="p-col">
                         <div className="field">
-                            <label htmlFor="rucCliente">RUC</label>
+                            <label htmlFor="rucCliente">Documento</label>
                             <InputText
                                 id="rucCliente"
                                 value={searchClienteRUC}
