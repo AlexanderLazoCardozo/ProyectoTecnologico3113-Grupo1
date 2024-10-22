@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import NavTab from '../../components/NavTab'
 import firebaseApp from '../../firebase/credenciales';
-import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { collection, getDocs, getFirestore, orderBy, query, where } from 'firebase/firestore';
 import { Button, Card, Container, Form, Header, Input, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react";
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import CotizacionesTabla from "./Tabla"
@@ -23,7 +23,7 @@ const Cotizaciones = ({user}) => {
 
             toast.info("Conectando base...")
 
-            const conectarData = query(collection(firestore, "DataCotizaciones"))
+            const conectarData = query(collection(firestore, "DataCotizaciones"), orderBy("NumeroCotizacion", "asc"))
             
             const snapData = await getDocs(conectarData)
 

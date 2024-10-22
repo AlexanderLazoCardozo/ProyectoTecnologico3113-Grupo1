@@ -204,6 +204,22 @@ const NuevaCotizacion = () => {
             vencimientoDate.setDate(vencimientoDate.getDate() + 10);
             const fechaVencimiento = formatearFecha(vencimientoDate);
 
+            const qCotizaciones = query(
+                collection(firestore, "DataCotizaciones"),
+                orderBy("NumeroCotizacion", "desc"),
+                limit(1)
+            );
+            
+            const snapshotCotizaciones = await getDocs(qCotizaciones);
+            let nuevoNumeroCotizacion = "VSFP-2024-00001"; 
+            
+            if (!snapshotCotizaciones.empty) {
+                const lastCotizacion = snapshotCotizaciones.docs[0];
+                const lastNumeroCotizacion = lastCotizacion.data().NumeroCotizacion;
+                const lastNumber = parseInt(lastNumeroCotizacion.slice(-5)) + 1;
+                nuevoNumeroCotizacion = `VSFP-2024-${String(lastNumber).padStart(5, '0')}`;
+            }
+
             //Generar un CodigoCli respectivo si el cliente ES NUEVO
             if(searchResults.length == 0){
 
@@ -247,12 +263,12 @@ const NuevaCotizacion = () => {
                         descripcion: fila.descripcion,
                         precioUnitario: fila.precio,
                         total: parseFloat((fila.cantidad * fila.precio).toFixed(2)),
-                        unidad: fila.unidad,
+                        unidad: "UND",
                     })),
                     MontoTotal: (montoTotal).toFixed(2),
                     FechaEmision: fechaEmision,
                     FechaVencimiento: fechaVencimiento,
-                    NumeroCotizacion: "VSFP-2024-01689"
+                    NumeroCotizacion: nuevoNumeroCotizacion
                 };
                 console.log("cotizacion",cotizacion)
 
@@ -317,12 +333,12 @@ const NuevaCotizacion = () => {
                         descripcion: fila.descripcion,
                         precioUnitario: fila.precio,
                         total: parseFloat((fila.cantidad * fila.precio).toFixed(2)),
-                        unidad: fila.unidad,
+                        unidad: "UND",
                     })),
                     MontoTotal: (montoTotal).toFixed(2),
                     FechaEmision: fechaEmision,
                     FechaVencimiento: fechaVencimiento,
-                    NumeroCotizacion: "VSFP-2024-01689"
+                    NumeroCotizacion: nuevoNumeroCotizacion
                 };
 
                 console.log("cotizacion",cotizacion)
@@ -562,9 +578,8 @@ const NuevaCotizacion = () => {
                                 </td>
                                 <td>
                                     <InputText
-                                        value={fila.unidad}
-                                        onChange={(e) => manejarCambioFila(index, 'unidad', e.target.value)}
-                                        required
+                                        value={"UND"}
+                                        disabled
                                     />
                                 </td>
                                 <td>
