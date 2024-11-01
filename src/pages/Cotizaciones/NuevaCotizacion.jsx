@@ -275,7 +275,8 @@ const NuevaCotizacion = () => {
                     MontoTotal: (montoTotal).toFixed(2),
                     FechaEmision: fechaEmision,
                     FechaVencimiento: fechaVencimiento,
-                    NumeroCotizacion: nuevoNumeroCotizacion
+                    NumeroCotizacion: nuevoNumeroCotizacion,
+                    Status:"En espera"
                 };
                 console.log("cotizacion",cotizacion)
 
@@ -373,7 +374,8 @@ const NuevaCotizacion = () => {
                     MontoTotal: (montoTotal).toFixed(2),
                     FechaEmision: fechaEmision,
                     FechaVencimiento: fechaVencimiento,
-                    NumeroCotizacion: nuevoNumeroCotizacion
+                    NumeroCotizacion: nuevoNumeroCotizacion,
+                    Status:"En espera"
                 };
 
                 console.log("cotizacion",cotizacion)
