@@ -31,8 +31,19 @@ const CotizacionesTabla = ({ data, Facturar }) => {
               <DetalleCotizacion cotizacion={item} />
             </td>
             <td>
-              <Button icon onClick={() => Facturar(item)}>
-                <Icon name="file invoice" />
+              <Button
+                icon
+                onClick={
+                  item.Status !== "Facturado" ? () => Facturar(item) : null
+                }
+                disabled={item.Status === "Facturado"}
+              >
+                <Icon
+                  name="file invoice"
+                  style={{
+                    color: item.Status === "Facturado" ? "gray" : "black",
+                  }}
+                />
               </Button>
             </td>
           </tr>
