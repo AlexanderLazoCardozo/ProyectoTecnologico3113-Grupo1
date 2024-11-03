@@ -1,0 +1,146 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr) !important;
+    gap: 5px !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    background-color: #e0e0e0 !important;
+    width: 100% !important;
+}
+
+.table-container {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    border-bottom: 2px solid black !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.table-header,
+.table-row {
+    display: contents !important;
+}
+
+.table-item {
+    padding: 10px !important;
+    text-align: center !important;
+    width: 100% !important;
+    border-bottom: none !important;
+     
+}
+
+.table-header .table-item {
+    font-weight: bold !important;
+    background-color: #f1f1f1 !important;
+    border: 1px solid black !important;     
+    border-radius: 4px 4px 0 0 !important;
+    
+}
+
+.table-header .table-item:last-child {
+    border-right: 0.5px solid black !important;
+    border-bottom: 0.5px solid black !important;
+}
+
+.table-row .table-item {
+    border-left: 0.5px solid black !important;
+    border-right: 0.5px solid black !important;
+    transition: background-color 0.3s;
+}
+
+.table-row:hover .table-item {
+    background-color: #cdcdcd !important;
+}
+
+.grid-item {
+    padding: 8px !important;
+    border: 1px solid #ddd !important;
+
+}
+
+.grid-header {
+    grid-column: span 2 !important;
+    font-weight: bold !important;
+    padding: 10px 0 !important;
+    background-color: #f7f7f7 !important;
+    border: 1px solid #000000 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+}
+
+.label {
+    font-weight: bold !important;
+    color: #000000 !important;
+    padding: 5px 0 !important;
+}
+
+.total-label {
+    font-weight: bold !important;
+    text-align: left !important;
+    color: #000000 !important;
+}
+
+.total-value {
+    font-weight: bold !important;
+    font-size: 1.2em !important;
+    color: #ff0000 !important;
+    text-align: right !important;
+}
+
+.modal-header {
+    display: grid !important;
+    grid-template-columns: repeat(2, 2fr) !important;
+    padding: 10px !important;
+    font-size: 1.2em !important;
+    align-items: center;
+}
+
+.modal-content {
+    padding: 20px !important;
+    background-color: #ffffff !important;
+}
+
+.factura-btn {
+    width: 100% !important;
+    padding: 10px !important;
+    background-color: #fff700 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.logo {
+    width: 300px !important;
+    height: auto !important;
+
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px !important;
+    border: 1px solid #000000 !important;
+    border-radius: 10px !important;
+    background-color: #ffffff !important;
+    height: 120px;
+}
+
+
+.boleta-info,
+.ruc-info,
+.codigo-boleta {
+    margin: 5px !important;
+}
+
+.boleta-info {
+    font-weight: bold !important;
+    font-size: 1.2em !important;
+}
+
+.ruc-info,
+.codigo-boleta {
+    font-size: 1em !important;
+}
