@@ -27,7 +27,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
     const invoicesRef = collection(firestore, "FacturacionOficial");
     const snapshot = await getDocs(invoicesRef);
     const invoiceCount = snapshot.size;
-    const newInvoiceNumber = `FAC-${String(invoiceCount + 1).padStart(3, '0')}`;
+    const newInvoiceNumber = `FAC-${String(invoiceCount + 1).padStart(3, "0")}`;
     setNumeroFactura(newInvoiceNumber);
   };
 
@@ -36,7 +36,10 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
   }, []);
 
   // Calcular subtotal, IGV y total
-  const subtotal = factura.Equipos.reduce((acc, equipo) => acc + equipo.total, 0);
+  const subtotal = factura.Equipos.reduce(
+    (acc, equipo) => acc + equipo.total,
+    0
+  );
   const igv = subtotal * 0.18;
   const total = subtotal + igv;
 
@@ -99,7 +102,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
       <Modal.Header className="modal-header">
         <img src={LogoEmpresa} alt="Logo de la Empresa" className="logo" />
         <div className="header-right">
-          <div className="boleta-info">Boleta de Venta Electrónica</div>
+          <div className="boleta-info">Factura Electrónica</div>
           <div className="ruc-info">RUC: {factura.Cliente.ruc}</div>
           <div className="codigo-boleta">{numeroFactura}</div>
         </div>
@@ -107,11 +110,17 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
       <Modal.Content className="modal-content">
         <div className="grid-container">
           <div className="grid-item label">RUC: {factura.Cliente.ruc}</div>
-          <div className="grid-item label">Cliente: {factura.Cliente.nombres}</div>
-          <div className="grid-item label">Dirección: {factura.Cliente.direccion}</div>
+          <div className="grid-item label">
+            Cliente: {factura.Cliente.nombres}
+          </div>
+          <div className="grid-item label">
+            Dirección: {factura.Cliente.direccion}
+          </div>
           <div className="grid-item label">Moneda: {Moneda}</div>
           <div className="grid-item label">Fecha de Emisión: {fechaHoy}</div>
-          <div className="grid-item label">Fecha de Vencimiento: {fechaHoy}</div>
+          <div className="grid-item label">
+            Fecha de Vencimiento: {fechaHoy}
+          </div>
         </div>
 
         <div className="grid-header">Detalles del Equipo</div>
@@ -137,7 +146,9 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
 
         <div className="grid-container">
           <div className="grid-item label">Observaciones:</div>
-          <div className="grid-item">Cotización N° {factura.NumeroCotizacion}</div>
+          <div className="grid-item">
+            Cotización N° {factura.NumeroCotizacion}
+          </div>
 
           <div className="grid-item label total-label">Total Gravada:</div>
           <div className="grid-item total-value">s/{subtotal.toFixed(2)}</div>
