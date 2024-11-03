@@ -19,7 +19,7 @@ import {
     Form,
     Popup
   } from 'semantic-ui-react'
-import { collection, getDocs, doc,setDoc,getFirestore, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, doc,setDoc,getFirestore, query, where, orderBy, limit, getDoc, writeBatch } from 'firebase/firestore';
 import firebaseApp from '../../firebase/credenciales';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css"
@@ -134,6 +134,13 @@ const NuevaCotizacion = () => {
     };
 
     const manejarCambioFila = (index, campo, valor) => {
+
+        console.log(campo)
+        console.log(valor)
+        if(campo == "cantidad" && valor > filas[index].stock){
+            toast.error("La cantidad es mayor al stock disponible");
+        }
+        
         const nuevasFilas = [...filas];
         
         nuevasFilas[index][campo] = valor;
@@ -293,9 +300,37 @@ const NuevaCotizacion = () => {
                     // Guardar el documento del cliente en Firestore
                     await setDoc(doc(collection(firestore, "DataComercialOficial"), clienteUID), clienteDoc);
                     
+
+                    const batch = writeBatch(firestore);
+
+                    // Actualizar el stock de cada equipo en la colección EquipoInventory
+                    for (const equipo of cotizacion.Equipos) {
+
+                        const equipoQuery = query(
+                            collection(firestore, "EquipoInventory"),
+                            where("CodigoEquipo", "==", equipo.codigoEquipo)
+                        );
+            
+                        const equipoSnapshot = await getDocs(equipoQuery);
+
+                        if (!equipoSnapshot.empty) {
+                            const equipoDoc = equipoSnapshot.docs[0];
+                            const currentStock = parseInt(equipoDoc.data().Stock) || 0;
+                            const newStock = currentStock - equipo.cantidad;
+
+                            console.log("current", currentStock, "new", equipo.cantidad)
+            
+                            batch.update(equipoDoc.ref, { Stock: newStock });
+                        } else {
+                            console.warn(`Equipo con código ${equipo.codigoEquipo} no encontrado en EquipoInventory.`);
+                        }
+                    }
+
+                    await batch.commit();
+
                     setOpenNew(false)
                     toast.success("Cotizacion creada.")
-                    reiniciarFormulario();  // Reiniciar los datos después de procesar
+                    reiniciarFormulario();  
 
                     // toast.current.show({ severity: 'success', summary: 'Cotización creada', detail: 'La cotización se ha guardado con éxito' });
                     console.log("Procesado Si existe")
@@ -346,13 +381,41 @@ const NuevaCotizacion = () => {
                 try {
                     await setDoc(doc(collection(firestore, "DataCotizaciones")), cotizacion);
 
-                    
+                    const batch = writeBatch(firestore);
+
+                    // Actualizar el stock de cada equipo en la colección EquipoInventory
+                    for (const equipo of cotizacion.Equipos) {
+
+                        const equipoQuery = query(
+                            collection(firestore, "EquipoInventory"),
+                            where("CodigoEquipo", "==", equipo.codigoEquipo)
+                        );
+            
+                        const equipoSnapshot = await getDocs(equipoQuery);
+
+                        if (!equipoSnapshot.empty) {
+                            const equipoDoc = equipoSnapshot.docs[0];
+                            const currentStock = parseInt(equipoDoc.data().Stock) || 0;
+                            const newStock = currentStock - equipo.cantidad;
+
+                            console.log("current", currentStock, "new", equipo.cantidad)
+            
+                            batch.update(equipoDoc.ref, { Stock: newStock });
+                        } else {
+                            console.warn(`Equipo con código ${equipo.codigoEquipo} no encontrado en EquipoInventory.`);
+                        }
+                    }
+
+                    await batch.commit();
+
                     // toast.current.show({ severity: 'success', summary: 'Cotización creada', detail: 'La cotización se ha guardado con éxito' });
                     console.log("Procesado No existe")
                     reiniciarFormulario();  // Reiniciar los datos después de procesar
 
                     toast.success("Cotizacion y clientes creados.")
                     setOpenNew(false)
+
+                    fetchEquipos();
                 } catch (error) {
                     console.error("Error al guardar en Firestore: ", error);
                     // toast.current.show({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar la cotización' });
@@ -373,26 +436,27 @@ const NuevaCotizacion = () => {
     const [equipos, setEquipos] = useState([]);
     const [selectedEquipo, setSelectedEquipo] = useState('');
 
+
+    const fetchEquipos = async () => {
+        try {
+        const conectarEquipos = query(collection(firestore, "EquipoInventory"));
+        const snapEquipos = await getDocs(conectarEquipos);
+
+        const equiposList = snapEquipos.docs.map(doc => ({
+            id: doc.id,
+            codigoEquipo: doc.data().CodigoEquipo,
+            stock: doc.data().Stock,
+            precio: doc.data().Precio,
+            descripcion: doc.data().Descripcion,
+        }));
+
+        setEquipos(equiposList);
+        } catch (error) {
+        console.error("Error fetching equipos:", error);
+        }
+    };
+
     useEffect(() => {
-        const fetchEquipos = async () => {
-            try {
-            const conectarEquipos = query(collection(firestore, "EquipoInventory"));
-            const snapEquipos = await getDocs(conectarEquipos);
-
-            const equiposList = snapEquipos.docs.map(doc => ({
-                id: doc.id,
-                codigoEquipo: doc.data().CodigoEquipo,
-                stock: doc.data().Stock,
-                precio: doc.data().Precio,
-                descripcion: doc.data().Descripcion,
-            }));
-
-            setEquipos(equiposList);
-            } catch (error) {
-            console.error("Error fetching equipos:", error);
-            }
-        };
-
         fetchEquipos();
     }, []);
 
@@ -570,11 +634,29 @@ const NuevaCotizacion = () => {
                                     />
                                 </td>
                                 <td>
-                                    <InputNumber
+                                    {fila.cantidad > fila.stock ? 
+
+                                        <div style={{display:"flex" , alignItems:"center"}}>
+                                        <InputNumber
                                         value={fila.cantidad}
                                         onValueChange={(e) => manejarCambioFila(index, 'cantidad', e.value)}
                                         required
-                                    />
+                                        invalid
+                                        />
+                                        <Icon name="exclamation circle" color="red" />
+                                        
+                                        </div>
+
+                                        :
+                                        <>
+                                        <InputNumber
+                                        value={fila.cantidad}
+                                        onValueChange={(e) => manejarCambioFila(index, 'cantidad', e.value)}
+                                        required
+                                        />
+                                        </>
+                                        
+                                    }
                                 </td>
                                 <td>
                                     <InputText
