@@ -25,7 +25,7 @@ const CotizacionesTabla = ({ data, Facturar }) => {
             <td>{item.FechaVencimiento}</td>
             <td>{item.CodigoCli}</td>
             <td>{item.Cliente.nombres}</td>
-            <td>{item.MontoTotal}</td>
+            <td>S/. {(item.MontoTotal * 1.18).toFixed(2)}</td>
             <td>{item.Status}</td>
             <td>
               <DetalleCotizacion cotizacion={item} />

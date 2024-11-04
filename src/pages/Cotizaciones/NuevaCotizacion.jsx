@@ -49,6 +49,11 @@ const NuevaCotizacion = () => {
   ]);
 
   //Cliente Dinamico
+  const [tempNombres, setTempNombres] = useState("");
+  const [tempApellidoPaterno, setTempApellidoPaterno] = useState("");
+  const [tempApellidoMaterno, setTempApellidoMaterno] = useState("");
+  const [razonSocial, setRazonSocial] = useState("");
+  const [tipoDocumento, setTipoDocumento] = useState("");
   const [searchClienteRUC, setSearchClienteRUC] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -73,6 +78,53 @@ const NuevaCotizacion = () => {
       handleSelectClient(results[0]);
     } else {
       handleSelectClient();
+    }
+  };
+
+  const handleSelectTipoDocumento = (e) => {
+    setTipoDocumento(e.value);
+
+    const newTipoDocumento = e.target.value;
+
+    if (newTipoDocumento === "RUC") {
+      // Guardar los valores actuales en los estados temporales
+      setTempNombres(nombres);
+      setTempApellidoPaterno(apellidoPaterno);
+      setTempApellidoMaterno(apellidoMaterno);
+      // Limpiar los campos de nombres y apellidos
+      setNombres("");
+      setApellidoPaterno("");
+      setApellidoMaterno("");
+    } else {
+      // Restaurar los valores si se cambia a un tipo de documento diferente a "RUC"
+      setNombres(tempNombres);
+      setApellidoPaterno(tempApellidoPaterno);
+      setApellidoMaterno(tempApellidoMaterno);
+      setRazonSocial(""); // Limpiar Razón Social cuando no es RUC
+    }
+
+    setTipoDocumento(newTipoDocumento);
+  };
+
+  const handleRUCChange = (e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+      if (value.startsWith("20")) {
+        // Mostrar Razón Social solo si comienza con "20"
+        setNombres("");
+        setApellidoPaterno("");
+        setApellidoMaterno("");
+      } else if (value.startsWith("10")) {
+        // Restaurar nombres y apellidos si empieza con "10"
+        setRazonSocial("");
+        setNombres(tempNombres);
+        setApellidoPaterno(tempApellidoPaterno);
+        setApellidoMaterno(tempApellidoMaterno);
+      }
+
+      // Actualizar el valor del RUC
+      setSearchClienteRUC(value);
     }
   };
 
@@ -418,12 +470,42 @@ const NuevaCotizacion = () => {
           <div className="p-grid">
             <div className="p-col">
               <div className="field">
-                <label htmlFor="rucCliente">Documento</label>
+                <label htmlFor="documento">Tipo de Documento</label>
+                <Dropdown
+                  id="documento"
+                  value={tipoDocumento}
+                  options={[
+                    { label: "RUC", value: "RUC" },
+                    { label: "DNI", value: "DNI" },
+                    { label: "CARNET DE EXTRANJERIA", value: "CARNET DE EXTRANJERIA" },
+                    { label: "PASAPORTE", value: "PASAPORTE" },
+                  ]}
+                  placeholder="Seleccionar tipo de documento"
+                  onChange={handleSelectTipoDocumento}
+                  required
+                  style={{ marginBottom: '15px', marginTop: '2px' }}
+                />
+                <label htmlFor="rucCliente">Número de Documento</label>
                 <InputText
                   id="rucCliente"
                   value={searchClienteRUC}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  maxLength={11}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      if (tipoDocumento === "RUC") {
+                        if (value.length <= 11) {
+                          if (value === "" || value.startsWith("10") || value.startsWith("20") || value.length < 2) {
+                            setSearchClienteRUC(value);
+                          }
+                        }
+                      } else if (tipoDocumento === "DNI") {
+                        if (value.length <= 8) {
+                          setSearchClienteRUC(value);
+                        }
+                      }
+                    }
+                  }}
+                  maxLength={tipoDocumento === "RUC" ? 11 : tipoDocumento === "DNI" ? 8 : 0}
                   required
                 />
               </div>
@@ -442,8 +524,7 @@ const NuevaCotizacion = () => {
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>
-                          Cliente Existente - Se le generara una nueva
-                          cotización
+                          Cliente Existente - Se le generará una nueva cotización
                         </Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
@@ -465,7 +546,7 @@ const NuevaCotizacion = () => {
                         readOnly
                       />
                       <Form.Input
-                        label="Direccion"
+                        label="Dirección"
                         placeholder="Direccion"
                         value={client.direccion}
                         id="Documento"
@@ -480,36 +561,51 @@ const NuevaCotizacion = () => {
             {/* Si el cliente no existe tomar estos datos */}
             {searchResults.length === 0 && (
               <>
-                <div className="field">
-                  <label htmlFor="nombres">Nombres</label>
-                  <InputText
-                    id="nombres"
-                    value={nombres}
-                    onChange={(e) => setNombres(e.target.value)}
-                    required
-                  />
-                </div>
+                {tipoDocumento === "RUC" && searchClienteRUC.startsWith("20") ? (
+                  <div className="field">
+                    <label htmlFor="razonSocial">Razón Social</label>
+                    <InputText
+                      id="razonSocial"
+                      value={razonSocial}
+                      onChange={(e) => setRazonSocial(e.target.value)}
+                      required
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="field">
+                      <label htmlFor="nombres">Nombres</label>
+                      <InputText
+                        id="nombres"
+                        value={nombres}
+                        onChange={(e) => setNombres(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <div className="field">
-                  <label htmlFor="apellidoPaterno">Apellido Paterno</label>
-                  <InputText
-                    id="apellidoPaterno"
-                    value={apellidoPaterno}
-                    onChange={(e) => setApellidoPaterno(e.target.value)}
-                    required
-                  />
-                </div>
+                    <div className="field">
+                      <label htmlFor="apellidoPaterno">Apellido Paterno</label>
+                      <InputText
+                        id="apellidoPaterno"
+                        value={apellidoPaterno}
+                        onChange={(e) => setApellidoPaterno(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <div className="field">
-                  <label htmlFor="apellidoMaterno">Apellido Materno</label>
-                  <InputText
-                    id="apellidoMaterno"
-                    value={apellidoMaterno}
-                    onChange={(e) => setApellidoMaterno(e.target.value)}
-                    required
-                  />
-                </div>
+                    <div className="field">
+                      <label htmlFor="apellidoMaterno">Apellido Materno</label>
+                      <InputText
+                        id="apellidoMaterno"
+                        value={apellidoMaterno}
+                        onChange={(e) => setApellidoMaterno(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </>
+                )}
 
+                {/* Otros campos adicionales */}
                 <div className="field">
                   <label htmlFor="direccionCliente">Dirección</label>
                   <InputText
@@ -521,7 +617,7 @@ const NuevaCotizacion = () => {
                 </div>
 
                 <div className="field">
-                  <label htmlFor="correoCliente">Correo Electronico</label>
+                  <label htmlFor="correoCliente">Correo Electrónico</label>
                   <InputText
                     id="correoCliente"
                     value={correoElectronico}
@@ -531,7 +627,7 @@ const NuevaCotizacion = () => {
                 </div>
 
                 <div className="field">
-                  <label htmlFor="numTelefono">Telefono </label>
+                  <label htmlFor="numTelefono">Teléfono</label>
                   <InputText
                     id="numTelefono"
                     value={numTelefono}
@@ -540,16 +636,18 @@ const NuevaCotizacion = () => {
                   />
                 </div>
 
-                <div className="field">
-                  <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
-                  <input
-                    type="date"
-                    id="fechaNacimiento"
-                    value={fechaNacimiento}
-                    onChange={(e) => setFechaNacimiento(e.target.value)}
-                    required
-                  />
-                </div>
+                {!(tipoDocumento === "RUC" && searchClienteRUC.startsWith("20")) && (
+                  <div className="field">
+                    <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
+                    <input
+                      type="date"
+                      id="fechaNacimiento"
+                      value={fechaNacimiento}
+                      onChange={(e) => setFechaNacimiento(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -646,7 +744,7 @@ const NuevaCotizacion = () => {
 
           {/* Condición */}
           <div className="field">
-            <h3>Método de Pago</h3>
+            <h3>Condición de Pago</h3>
             <Dropdown
               value={condicion}
               onChange={(e) => setCondicion(e.value)}

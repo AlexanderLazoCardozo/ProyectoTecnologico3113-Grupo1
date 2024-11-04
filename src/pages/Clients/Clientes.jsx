@@ -12,82 +12,82 @@ import DetalleCotizacion from '../DetalleCotizacion/DetalleCotizacion';
 
 const firestore = getFirestore(firebaseApp);
 
-const Clientes = ({user}) => {
-    
-    const [datosCli, setDatosCli] = useState([]);
-    const [cotizacionesCli, setCotizacionesCli] = useState([])
-    const [equiposAdquiridos, setEquiposAdquiridos] = useState([])
-    const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null); 
+const Clientes = ({ user }) => {
 
-    const [busquedaCli, setBusquedaCli] = useState([]);
-    const [modalOpen, setModalOpen] = useState(false);
+  const [datosCli, setDatosCli] = useState([]);
+  const [cotizacionesCli, setCotizacionesCli] = useState([])
+  const [equiposAdquiridos, setEquiposAdquiridos] = useState([])
+  const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
+
+  const [busquedaCli, setBusquedaCli] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const dataCall = async () => {
 
-      try {
+    try {
 
-        toast.info("Conectando base...")
+      toast.info("Conectando base...")
 
-            //LLamar datos del cliente
-            const conectarBase = query(collection(firestore,"DataComercialOficial"), where("CodigoCli","==",busquedaCli ))
+      //LLamar datos del cliente
+      const conectarBase = query(collection(firestore, "DataComercialOficial"), where("CodigoCli", "==", busquedaCli))
 
-            const conectarSnapshot = await getDocs(conectarBase)
-
-
-            const documentosFind = conectarSnapshot.docs.map((doc) => {
-
-                return doc.data()
-
-            })
-            setDatosCli(documentosFind);
-
-            // if (documentosFind.length === 1) {
-            //   setClienteSeleccionado(documentosFind[0]);
-            // } else {
-            //   setClienteSeleccionado(null);
-            // }
-            
-            console.log("Datos del Cliente",documentosFind)
-
-            //LLamar a sus cotizaciones
-            const conectarBaseCotiz = query(collection(firestore,"DataCotizaciones"), where("CodigoCli","==",busquedaCli ))
-
-            const conectarSnapshotCotiz = await getDocs(conectarBaseCotiz)
+      const conectarSnapshot = await getDocs(conectarBase)
 
 
-            const documentosFindCotiz = conectarSnapshotCotiz.docs.map((doc) => {
+      const documentosFind = conectarSnapshot.docs.map((doc) => {
 
-                return doc.data()
+        return doc.data()
 
-            })
-            setCotizacionesCli(documentosFindCotiz);
+      })
+      setDatosCli(documentosFind);
 
-            console.log("Cotizaciones del cliente",documentosFindCotiz)
+      // if (documentosFind.length === 1) {
+      //   setClienteSeleccionado(documentosFind[0]);
+      // } else {
+      //   setClienteSeleccionado(null);
+      // }
+
+      console.log("Datos del Cliente", documentosFind)
+
+      //LLamar a sus cotizaciones
+      const conectarBaseCotiz = query(collection(firestore, "DataCotizaciones"), where("CodigoCli", "==", busquedaCli))
+
+      const conectarSnapshotCotiz = await getDocs(conectarBaseCotiz)
 
 
-            //Llamar a productos adquiridos 
-            const conectarBaseAdquir = query(collection(firestore,"EquipoOutbound"), where("CodigoCli","==",busquedaCli ))
+      const documentosFindCotiz = conectarSnapshotCotiz.docs.map((doc) => {
 
-            const conectarSnapshotAdquir = await getDocs(conectarBaseAdquir)
+        return doc.data()
+
+      })
+      setCotizacionesCli(documentosFindCotiz);
+
+      console.log("Cotizaciones del cliente", documentosFindCotiz)
 
 
-            const documentosFindAdquir = conectarSnapshotAdquir.docs.map((doc) => {
+      //Llamar a productos adquiridos 
+      const conectarBaseAdquir = query(collection(firestore, "EquipoOutbound"), where("CodigoCli", "==", busquedaCli))
 
-                return doc.data()
+      const conectarSnapshotAdquir = await getDocs(conectarBaseAdquir)
 
-            })
-            setEquiposAdquiridos(documentosFindAdquir);
 
-            console.log("Equipos contratados del cliente",documentosFindAdquir)
-            
-           
-          toast.success("Datos obtenidos exitosamente.")
-          
-        } catch (error) {
-            console.log(error)
-        }
+      const documentosFindAdquir = conectarSnapshotAdquir.docs.map((doc) => {
 
-      
+        return doc.data()
+
+      })
+      setEquiposAdquiridos(documentosFindAdquir);
+
+      console.log("Equipos contratados del cliente", documentosFindAdquir)
+
+
+      toast.success("Datos obtenidos exitosamente.")
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
   };
 
   const customStyles = {
@@ -98,7 +98,7 @@ const Clientes = ({user}) => {
         fontWeight: 'bold', // Texto en negrita
       },
     },
-   
+
   };
 
   return (
@@ -181,22 +181,22 @@ const Clientes = ({user}) => {
                           { name: 'Numero Cotizacion', selector: row => row.NumeroCotizacion, sortable: true },
                           { name: 'Fecha Emisión', selector: row => row.FechaEmision || 'N/A', sortable: true },
                           { name: 'Fecha Vencimiento', selector: row => row.FechaVencimiento || 'N/A', sortable: true },
-                          { name: 'Monto Total', selector: row => row.MontoTotal || 'N/A', sortable: true },
+                          { name: 'Monto Total', selector: row => `S/. ${(row.MontoTotal * 1.18).toFixed(2)}` || 'N/A', sortable: true },
                           {
-                            name: 'Ver', 
+                            name: 'Ver',
                             cell: row => (
                               <Button
                                 icon
                                 color="yellow"
                                 size='small'
                                 onClick={() => {
-                                  setCotizacionSeleccionada(row); 
-                                  setModalOpen(true); 
+                                  setCotizacionSeleccionada(row);
+                                  setModalOpen(true);
                                 }}
                               >
                                 <Icon name='eye' />
                               </Button>
-                            ),      width: '100px' 
+                            ), width: '100px'
 
                           }
                         ]}
@@ -218,19 +218,19 @@ const Clientes = ({user}) => {
                   <Card.Content>
                     <Card.Header></Card.Header>
                     <Card.Description>
-                        <DataTable
-                            columns={[
-                              { name: 'CodigoEquipo', selector: row => row.CodigoEquipo, sortable: true },
-                              { name: 'Fecha Adquisición', selector: row => row.FechaSalida || 'N/A', sortable: true },
-                              { name: 'Fecha Devolución', selector: row => row.FechaDevolucion || 'N/A', sortable: true },
-                            ]}
-                            data={equiposAdquiridos}
-                            pagination
-                            customStyles={customStyles}
-                            paginationPerPage={5}
-                            dense
-                          />
-                        
+                      <DataTable
+                        columns={[
+                          { name: 'CodigoEquipo', selector: row => row.CodigoEquipo, sortable: true },
+                          { name: 'Fecha Adquisición', selector: row => row.FechaSalida || 'N/A', sortable: true },
+                          { name: 'Fecha Devolución', selector: row => row.FechaDevolucion || 'N/A', sortable: true },
+                        ]}
+                        data={equiposAdquiridos}
+                        pagination
+                        customStyles={customStyles}
+                        paginationPerPage={5}
+                        dense
+                      />
+
                     </Card.Description>
                   </Card.Content>
                 </Card>
@@ -239,118 +239,118 @@ const Clientes = ({user}) => {
 
           )}
 
-          
+
         </Grid>
 
         {/* Modal de detalles de cotización */}
 
-          <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            size='tiny'
-            dimmer='blurring'
-          >
-            <Modal.Header>
-              <Header as='h2' style={{ textAlign: 'center', backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd', margin: 0 }}>
-                Detalles Cotización
-                <Button
-                  icon='close'
-                  onClick={() => setModalOpen(false)}
-                  style={{ color: 'red', position: 'absolute', right: '10px', top: '10px', background: 'none' }}
-                />
-              </Header>
-            </Modal.Header>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          size='tiny'
+          dimmer='blurring'
+        >
+          <Modal.Header>
+            <Header as='h2' style={{ textAlign: 'center', backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd', margin: 0 }}>
+              Detalles Cotización
+              <Button
+                icon='close'
+                onClick={() => setModalOpen(false)}
+                style={{ color: 'red', position: 'absolute', right: '10px', top: '10px', background: 'none' }}
+              />
+            </Header>
+          </Modal.Header>
 
-            <Modal.Content scrolling>
-              <Segment raised padded='very'>
-                <Grid divided>
+          <Modal.Content scrolling>
+            <Segment raised padded='very'>
+              <Grid divided>
 
-                  <Grid.Row columns={2}>
-                    <Grid.Column width={4}>
-                      <Icon name='user' size='big' />
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                      <Header as='h3'>Cliente</Header>
-                      <p style={{ fontSize: '1.2em' }}>
-                        {cotizacionSeleccionada?.Cliente.nombres}
-                      </p>
-                      </Grid.Column>
-                  </Grid.Row>
+                <Grid.Row columns={2}>
+                  <Grid.Column width={4}>
+                    <Icon name='user' size='big' />
+                  </Grid.Column>
+                  <Grid.Column width={12}>
+                    <Header as='h3'>Cliente</Header>
+                    <p style={{ fontSize: '1.2em' }}>
+                      {cotizacionSeleccionada?.Cliente.nombres}
+                    </p>
+                  </Grid.Column>
+                </Grid.Row>
 
-                  <Divider />
+                <Divider />
 
-                  <Grid.Row columns={2}>
-                    <Grid.Column width={4}>
-                      <Icon name='calendar alternate outline' size='big' />
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                      <Header as='h3'>Fecha de Creación</Header>
-                      <p style={{ fontSize: '1.2em' }}>
+                <Grid.Row columns={2}>
+                  <Grid.Column width={4}>
+                    <Icon name='calendar alternate outline' size='big' />
+                  </Grid.Column>
+                  <Grid.Column width={12}>
+                    <Header as='h3'>Fecha de Creación</Header>
+                    <p style={{ fontSize: '1.2em' }}>
                       {cotizacionSeleccionada?.FechaEmision}
-                      </p>
-                    </Grid.Column>
+                    </p>
+                  </Grid.Column>
 
-                    
-                  </Grid.Row>
 
-                  <Divider />
+                </Grid.Row>
 
-                  <Grid.Row columns={2}>
-                    <Grid.Column width={4}>
-                      <Icon name='calendar alternate outline' size='big' />
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                      <Header as='h3'>Fecha de Vencimiento</Header>
-                      <p style={{ fontSize: '1.2em' }}>
+                <Divider />
+
+                <Grid.Row columns={2}>
+                  <Grid.Column width={4}>
+                    <Icon name='calendar alternate outline' size='big' />
+                  </Grid.Column>
+                  <Grid.Column width={12}>
+                    <Header as='h3'>Fecha de Vencimiento</Header>
+                    <p style={{ fontSize: '1.2em' }}>
                       {cotizacionSeleccionada?.FechaVencimiento}
-                      </p>
-                    </Grid.Column>
+                    </p>
+                  </Grid.Column>
 
-                    
-                  </Grid.Row>
 
-                  <Divider />
+                </Grid.Row>
 
-                  <Grid.Row columns={2}>
-                    <Grid.Column width={4}>
-                      <Icon name='cart arrow down' size='big' />
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                      <Header as='h3'>Precio Total</Header>
-                      <p style={{ fontSize: '1.2em' }}>
-                      S/.{cotizacionSeleccionada?.MontoTotal}
-                      </p>
-                    </Grid.Column>
-                  </Grid.Row>
+                <Divider />
 
-                  <Divider />
+                <Grid.Row columns={2}>
+                  <Grid.Column width={4}>
+                    <Icon name='cart arrow down' size='big' />
+                  </Grid.Column>
+                  <Grid.Column width={12}>
+                    <Header as='h3'>Precio Total (con IGV)</Header>
+                    <p style={{ fontSize: '1.2em' }}>
+                      S/.{(cotizacionSeleccionada?.MontoTotal * 1.18).toFixed(2)}
+                    </p>
+                  </Grid.Column>
+                </Grid.Row>
 
-                  {/* Mostrar los equipos asociados a la cotización */}
-                  <Grid.Row>
-                    <Grid.Column>
-                      <Header as='h3'>Equipos Cotizados: </Header>
-                      {cotizacionSeleccionada?.Equipos?.length > 0 ? (
-                        <>
-                          {cotizacionSeleccionada.Equipos.map((equipo, index) => (
-                            <Segment key={index}>
-                              <p><strong>Cod. Equipo:</strong> {equipo.codigoEquipo}</p>
-                              <p><strong>Descripción:</strong> {equipo.descripcion}</p>
-                              <p><strong>Cantidad:</strong> {equipo.cantidad}</p>
-                              <p><strong>Precio Unitario:</strong> S/.{equipo.precioUnitario}</p>
-                              <p><strong>Total:</strong> S/.{equipo.total}</p>
-                            </Segment>
-                          ))}
-                        </>
-                      ) : (
-                        <p>No hay equipos en esta cotización.</p>
-                      )}
-                    </Grid.Column>
-                  </Grid.Row>
-                  <DetalleCotizacion cotizacion={cotizacionSeleccionada} />
-                </Grid>
-              </Segment>
-            </Modal.Content>
-          </Modal>
+                <Divider />
+
+                {/* Mostrar los equipos asociados a la cotización */}
+                <Grid.Row>
+                  <Grid.Column>
+                    <Header as='h3'>Equipos Cotizados: </Header>
+                    {cotizacionSeleccionada?.Equipos?.length > 0 ? (
+                      <>
+                        {cotizacionSeleccionada.Equipos.map((equipo, index) => (
+                          <Segment key={index}>
+                            <p><strong>Cod. Equipo:</strong> {equipo.codigoEquipo}</p>
+                            <p><strong>Descripción:</strong> {equipo.descripcion}</p>
+                            <p><strong>Cantidad:</strong> {equipo.cantidad}</p>
+                            <p><strong>Precio Unitario:</strong> S/.{equipo.precioUnitario}</p>
+                            <p><strong>Total:</strong> S/.{equipo.total}</p>
+                          </Segment>
+                        ))}
+                      </>
+                    ) : (
+                      <p>No hay equipos en esta cotización.</p>
+                    )}
+                  </Grid.Column>
+                </Grid.Row>
+                <DetalleCotizacion cotizacion={cotizacionSeleccionada} />
+              </Grid>
+            </Segment>
+          </Modal.Content>
+        </Modal>
       </Container>
     </NavTab>
   );
