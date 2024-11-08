@@ -191,10 +191,13 @@ const NuevaCotizacion = () => {
         setFechaNacimiento('');
         setNumTelefono('');
         setFilas([]);
+        setSearchResults([]);
     };
 
     //Crear cotizacion
     const crearCotizacion = async(event) => {
+        setOpenNew(false)
+        toast.info("Creando cotización...")
         event.preventDefault()
         try {
 
@@ -257,9 +260,6 @@ const NuevaCotizacion = () => {
         
                 const montoTotal = calcularMontoTotal(); 
 
-               
-                
-               
                 
                 const cotizacion = {
                     Cliente: datosCliente,
@@ -328,7 +328,6 @@ const NuevaCotizacion = () => {
 
                     await batch.commit();
 
-                    setOpenNew(false)
                     toast.success("Cotizacion creada.")
                     reiniciarFormulario();  
 
@@ -412,7 +411,7 @@ const NuevaCotizacion = () => {
                     console.log("Procesado No existe")
                     reiniciarFormulario();  // Reiniciar los datos después de procesar
 
-                    toast.success("Cotizacion y clientes creados.")
+                    toast.success("Cotizacion y Cliente (Si es nuevo) creados.")
                     setOpenNew(false)
 
                     fetchEquipos();
