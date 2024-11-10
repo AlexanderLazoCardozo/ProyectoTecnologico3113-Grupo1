@@ -32,7 +32,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const firestore = getFirestore(firebaseApp);
 
-const NuevaCotizacion = () => {
+const NuevaCotizacion2 = () => {
   const [openNew, setOpenNew] = React.useState(false);
 
   const [nombres, setNombres] = useState("");
@@ -49,7 +49,6 @@ const NuevaCotizacion = () => {
   ]);
 
   //Cliente Dinamico
-
   const [tempNombres, setTempNombres] = useState("");
   const [tempApellidoPaterno, setTempApellidoPaterno] = useState("");
   const [tempApellidoMaterno, setTempApellidoMaterno] = useState("");
@@ -80,6 +79,53 @@ const NuevaCotizacion = () => {
       handleSelectClient(results[0]);
     } else {
       handleSelectClient();
+    }
+  };
+
+  const handleSelectTipoDocumento = (e) => {
+    setTipoDocumento(e.value);
+
+    const newTipoDocumento = e.target.value;
+
+    if (newTipoDocumento === "RUC") {
+      // Guardar los valores actuales en los estados temporales
+      setTempNombres(nombres);
+      setTempApellidoPaterno(apellidoPaterno);
+      setTempApellidoMaterno(apellidoMaterno);
+      // Limpiar los campos de nombres y apellidos
+      setNombres("");
+      setApellidoPaterno("");
+      setApellidoMaterno("");
+    } else {
+      // Restaurar los valores si se cambia a un tipo de documento diferente a "RUC"
+      setNombres(tempNombres);
+      setApellidoPaterno(tempApellidoPaterno);
+      setApellidoMaterno(tempApellidoMaterno);
+      setRazonSocial(""); // Limpiar Razón Social cuando no es RUC
+    }
+
+    setTipoDocumento(newTipoDocumento);
+  };
+
+  const handleRUCChange = (e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+      if (value.startsWith("20")) {
+        // Mostrar Razón Social solo si comienza con "20"
+        setNombres("");
+        setApellidoPaterno("");
+        setApellidoMaterno("");
+      } else if (value.startsWith("10")) {
+        // Restaurar nombres y apellidos si empieza con "10"
+        setRazonSocial("");
+        setNombres(tempNombres);
+        setApellidoPaterno(tempApellidoPaterno);
+        setApellidoMaterno(tempApellidoMaterno);
+      }
+
+      // Actualizar el valor del RUC
+      setSearchClienteRUC(value);
     }
   };
 
@@ -154,13 +200,10 @@ const NuevaCotizacion = () => {
     setFechaNacimiento("");
     setNumTelefono("");
     setFilas([]);
-    setSearchResults([]);
   };
 
   //Crear cotizacion
   const crearCotizacion = async (event) => {
-    setOpenNew(false);
-    toast.info("Creando cotización...");
     event.preventDefault();
     try {
       const formatearFecha = (fecha) => {
@@ -211,25 +254,10 @@ const NuevaCotizacion = () => {
         const newCodigoCli = incrementarCodigoCli(lastCodigoCli);
 
         const datosCliente = {
-          // Si el RUC empieza con "20", usamos 'razonSocial', de lo contrario usamos 'nombres' y 'apellidos'
-          razonSocial: searchClienteRUC.startsWith("20")
-            ? razonSocial
-            : undefined, // Si es RUC de empresa, usamos razonSocial
-          nombres: searchClienteRUC.startsWith("20") ? undefined : nombres, // Si no es empresa, usamos nombres
-          apellidos: searchClienteRUC.startsWith("20")
-            ? undefined
-            : apellidoPaterno + " " + apellidoMaterno, // Si no es empresa, usamos apellidos
+          nombres: nombres + " " + apellidoPaterno + " " + apellidoMaterno,
           direccion: direccionCliente,
           ruc: searchClienteRUC,
-          tipoDocumento: tipoDocumento,
         };
-
-        Object.keys(datosCliente).forEach((key) => {
-          if (datosCliente[key] === undefined) {
-            delete datosCliente[key]; // Eliminar el campo si es undefined
-          }
-        });
-        console.log("datosCli1", datosCliente);
 
         const montoTotal = calcularMontoTotal();
 
@@ -264,26 +292,17 @@ const NuevaCotizacion = () => {
 
           const clienteDoc = {
             CodigoCli: newCodigoCli,
-            razonSocial: searchClienteRUC.startsWith("20")
-              ? razonSocial
-              : undefined, // Solo se guarda si es RUC de empresa
-            nombres: searchClienteRUC.startsWith("20") ? undefined : nombres, // Solo si es persona natural
-            apellidos: searchClienteRUC.startsWith("20")
-              ? undefined
-              : apellidoPaterno + " " + apellidoMaterno, // Solo si es persona natural
+            nombres: nombres,
+            apellidos: apellidoPaterno + " " + apellidoMaterno,
             correoElectronico: correoElectronico,
             direccion: direccionCliente,
             documento: searchClienteRUC,
-            tipoDocumento: tipoDocumento,
             fechaNacimiento: fechaNacimiento,
             numTelefono: numTelefono,
+            //Tipo Doc descartado?
             UID: clienteUID,
           };
-          Object.keys(clienteDoc).forEach((key) => {
-            if (clienteDoc[key] === undefined) {
-              delete clienteDoc[key]; // Eliminar el campo si tiene valor undefined
-            }
-          });
+
           // Guardar el documento del cliente en Firestore
           await setDoc(
             doc(collection(firestore, "DataComercialOficial"), clienteUID),
@@ -318,6 +337,7 @@ const NuevaCotizacion = () => {
 
           await batch.commit();
 
+          setOpenNew(false);
           toast.success("Cotizacion creada.");
           reiniciarFormulario();
 
@@ -330,32 +350,12 @@ const NuevaCotizacion = () => {
         //y añadiendole una Interaccion
       } else {
         const datosCliente = {
-          // Si el RUC de searchResults[0] empieza con "20", usamos 'razonSocial' en lugar de 'nombres' y 'apellidos'
-          razonSocial: searchResults[0].documento.startsWith("20")
-            ? searchResults[0].razonSocial
-            : undefined, // Si es RUC de empresa, usamos razonSocial
-          nombres: searchResults[0].documento.startsWith("20")
-            ? undefined
-            : searchResults[0].nombres, // Si no es empresa, usamos los nombres
-          apellidos: searchResults[0].documento.startsWith("20")
-            ? undefined
-            : searchResults[0].apellidos, // Si no es empresa, usamos los apellidos
+          nombres: searchResults[0].nombres + " " + searchResults[0].apellidos,
           direccion: searchResults[0].direccion,
           ruc: searchResults[0].documento,
-          tipoDocumento: searchResults[0].tipoDocumento
-            ? searchResults[0].tipoDocumento
-            : "Sin Datos",
         };
 
-        Object.keys(datosCliente).forEach((key) => {
-          if (datosCliente[key] === undefined) {
-            delete datosCliente[key]; // Eliminar el campo si es undefined
-          }
-        });
-
         const montoTotal = calcularMontoTotal();
-
-        console.log("datosCli2", datosCliente);
 
         const cotizacion = {
           Cliente: datosCliente,
@@ -412,7 +412,8 @@ const NuevaCotizacion = () => {
           console.log("Procesado No existe");
           reiniciarFormulario(); // Reiniciar los datos después de procesar
 
-          toast.success("Cotizacion y Cliente (Si es nuevo) creados.");
+          toast.success("Cotizacion y clientes creados.");
+          setOpenNew(false);
 
           fetchEquipos();
         } catch (error) {
@@ -451,31 +452,6 @@ const NuevaCotizacion = () => {
     fetchEquipos();
   }, []);
 
-  const handleSelectTipoDocumento = (e) => {
-    setTipoDocumento(e.value);
-
-    const newTipoDocumento = e.target.value;
-
-    if (newTipoDocumento === "RUC") {
-      // Guardar los valores actuales en los estados temporales
-      setTempNombres(nombres);
-      setTempApellidoPaterno(apellidoPaterno);
-      setTempApellidoMaterno(apellidoMaterno);
-      // Limpiar los campos de nombres y apellidos
-      setNombres("");
-      setApellidoPaterno("");
-      setApellidoMaterno("");
-    } else {
-      // Restaurar los valores si se cambia a un tipo de documento diferente a "RUC"
-      setNombres(tempNombres);
-      setApellidoPaterno(tempApellidoPaterno);
-      setApellidoMaterno(tempApellidoMaterno);
-      setRazonSocial(""); // Limpiar Razón Social cuando no es RUC
-    }
-
-    setTipoDocumento(newTipoDocumento);
-  };
-
   return (
     <Modal
       style={{ margin: "auto", width: "auto" }}
@@ -513,7 +489,6 @@ const NuevaCotizacion = () => {
                   required
                   style={{ marginBottom: "15px", marginTop: "2px" }}
                 />
-
                 <label htmlFor="rucCliente">Número de Documento</label>
                 <InputText
                   id="rucCliente"
@@ -538,8 +513,6 @@ const NuevaCotizacion = () => {
                         }
                       }
                     }
-
-                    handleSearch(value);
                   }}
                   maxLength={
                     tipoDocumento === "RUC"
@@ -566,7 +539,7 @@ const NuevaCotizacion = () => {
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>
-                          Cliente Existente - Se le generara una nueva
+                          Cliente Existente - Se le generará una nueva
                           cotización
                         </Table.HeaderCell>
                       </Table.Row>
@@ -574,13 +547,7 @@ const NuevaCotizacion = () => {
                     <Table.Body>
                       <Table.Row>
                         <Table.Cell>
-                          {client.razonSocial ? (
-                            client.razonSocial
-                          ) : (
-                            <>
-                              {client.nombres} {client.apellidos}
-                            </>
-                          )}
+                          {client.nombres} {client.apellidos}
                         </Table.Cell>
                       </Table.Row>
                     </Table.Body>
@@ -595,7 +562,7 @@ const NuevaCotizacion = () => {
                         readOnly
                       />
                       <Form.Input
-                        label="Direccion"
+                        label="Dirección"
                         placeholder="Direccion"
                         value={client.direccion}
                         id="Documento"
@@ -796,7 +763,7 @@ const NuevaCotizacion = () => {
 
           {/* Condición */}
           <div className="field">
-            <h3>Método de Pago</h3>
+            <h3>Condición de Pago</h3>
             <Dropdown
               value={condicion}
               onChange={(e) => setCondicion(e.value)}
@@ -807,15 +774,10 @@ const NuevaCotizacion = () => {
               required
             />
           </div>
-          <div style={{ textAlign: "center", margin: "auto" }}>
-            <Button
-              style={{ textAlign: "center", margin: "auto" }}
-              primary
-              onClick={crearCotizacion}
-              type="button"
-            >
+          <div>
+            <Button primary onClick={crearCotizacion} type="button">
               {" "}
-              CREAR COTIZACIÓN{" "}
+              Crear{" "}
             </Button>
           </div>
         </form>
@@ -832,4 +794,4 @@ const NuevaCotizacion = () => {
   );
 };
 
-export default NuevaCotizacion;
+export default NuevaCotizacion2;

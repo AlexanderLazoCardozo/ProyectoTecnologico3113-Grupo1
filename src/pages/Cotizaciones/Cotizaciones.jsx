@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
+import NuevaCotizacion2 from "./NuevaCotizacion2";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -28,7 +29,7 @@ const Cotizaciones = ({ user }) => {
       toast.info("Conectando base...");
       const conectarData = query(
         collection(firestore, "DataCotizaciones"),
-        orderBy("NumeroCotizacion", "asc")
+        orderBy("NumeroCotizacion", "desc")
       );
       const snapData = await getDocs(conectarData);
 

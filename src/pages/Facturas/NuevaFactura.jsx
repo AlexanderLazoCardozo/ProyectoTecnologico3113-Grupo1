@@ -47,13 +47,25 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const clienteData = {
+        direccion: factura.Cliente.direccion,
+        ruc: factura.Cliente.ruc,
+        CodigoCli: factura.CodigoCli,
+        razonSocial: factura.Cliente.razonSocial || undefined, // Usa razonSocial si existe; de lo contrario, será undefined
+        nombres: factura.Cliente.razonSocial
+          ? undefined
+          : factura.Cliente.nombres, // Usa nombres solo si razonSocial no existe
+      };
+
+      // Eliminar campos undefined de clienteData
+      Object.keys(clienteData).forEach((key) => {
+        if (clienteData[key] === undefined) {
+          delete clienteData[key];
+        }
+      });
+
       await addDoc(collection(firestore, "FacturacionOficial"), {
-        Cliente: {
-          direccion: factura.Cliente.direccion,
-          nombres: factura.Cliente.nombres,
-          ruc: factura.Cliente.ruc,
-          CodigoCli: factura.CodigoCli,
-        },
+        Cliente: clienteData,
         Equipos: factura.Equipos.map((equipo) => ({
           cantidad: equipo.cantidad,
           codigoEquipo: equipo.codigoEquipo,
@@ -111,7 +123,12 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         <div className="grid-container">
           <div className="grid-item label">RUC: {factura.Cliente.ruc}</div>
           <div className="grid-item label">
-            Cliente: {factura.Cliente.nombres}
+            Cliente:
+            {factura.Cliente.razonSocial ? (
+              factura.Cliente.razonSocial
+            ) : (
+              <>{factura.Cliente.nombres}</>
+            )}
           </div>
           <div className="grid-item label">
             Dirección: {factura.Cliente.direccion}
