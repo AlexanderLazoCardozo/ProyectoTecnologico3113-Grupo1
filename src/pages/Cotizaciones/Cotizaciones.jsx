@@ -15,7 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
-import NuevaCotizacion2 from "./NuevaCotizacion2";
 
 const firestore = getFirestore(firebaseApp);
 
