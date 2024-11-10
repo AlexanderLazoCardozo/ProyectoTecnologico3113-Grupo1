@@ -114,8 +114,11 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
       <Modal.Header className="modal-header">
         <img src={LogoEmpresa} alt="Logo de la Empresa" className="logo" />
         <div className="header-right">
-          <div className="ruc-info">RUC: {factura.Cliente.ruc}</div>
-          <div className="boleta-info">Factura Electrónica</div>
+          <div className="ruc-info">RUC: 20551020313</div>
+          <div className="boleta-info">
+            {factura.Cliente.tipoDocumento != "RUC" ? "Boleta" : "Factura"}{" "}
+            Electrónica
+          </div>
           <div className="codigo-boleta">{numeroFactura}</div>
         </div>
       </Modal.Header>
@@ -139,7 +142,10 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
 
       <Modal.Content className="modal-content">
         <div className="grid-container">
-          <div className="grid-item label">RUC: {factura.Cliente.ruc}</div>
+          <div className="grid-item label">
+            {factura.Cliente.tipoDocumento != "RUC" ? "Documento" : "RUC"}:{" "}
+            {factura.Cliente.ruc}
+          </div>
           <div className="grid-item label">
             Cliente:
             {factura.Cliente.razonSocial ? (
@@ -174,8 +180,8 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
                 <td data-label="Cantidad">{equipo.cantidad}</td>
                 <td data-label="Código">{equipo.codigoEquipo}</td>
                 <td data-label="Descripción">{equipo.descripcion}</td>
-                <td data-label="Precio Unitario">s/{equipo.precioUnitario}</td>
-                <td data-label="Importe">s/{equipo.total}</td>
+                <td data-label="Precio Unitario">S/{equipo.precioUnitario}</td>
+                <td data-label="Importe">S/{equipo.total}</td>
               </tr>
             ))}
           </tbody>
@@ -199,23 +205,40 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
               CCI: 01137200010003311202
             </div>
           </div>
-          <div className="SemiMaster2">
-            <div class="salidas">
-              <div className="salidasc">Total Op. Gravada</div>
-              <div className="salidasc">US$</div>
-              <div className="salidasc">{subtotal.toFixed(2)}</div>
-            </div>
-            <div class="salidas">
-              <div className="salidasc">Total IGV 18%</div>
-              <div className="salidasc">US$</div>
-              <div className="salidasc">{igv.toFixed(2)}</div>
-            </div>
-            <div class="salidas">
-              <div className="salidasc">Importe Total</div>
-              <div className="salidasc">US$</div>
-              <div className="salidasc">{total.toFixed(2)}</div>
-            </div>
-          </div>
+
+          {factura.Cliente.tipoDocumento != "RUC" ? (
+            <>
+              {" "}
+              <div className="SemiMaster2">
+                <div class="salidas">
+                  <div className="salidasc">Importe Total (Incluye IGV)</div>
+                  <div className="salidasc">S/</div>
+                  <div className="salidasc">{total.toFixed(2)}</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {" "}
+              <div className="SemiMaster2">
+                <div class="salidas">
+                  <div className="salidasc">Total Op. Gravada</div>
+                  <div className="salidasc">S/</div>
+                  <div className="salidasc">{subtotal.toFixed(2)}</div>
+                </div>
+                <div class="salidas">
+                  <div className="salidasc">Total IGV 18%</div>
+                  <div className="salidasc">S/</div>
+                  <div className="salidasc">{igv.toFixed(2)}</div>
+                </div>
+                <div class="salidas">
+                  <div className="salidasc">Importe Total</div>
+                  <div className="salidasc">S/</div>
+                  <div className="salidasc">{total.toFixed(2)}</div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <div class="lineadivisoria">
           <p>
