@@ -12,11 +12,22 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 .container {
-    display: flex; 
-    justify-content: center;
-    align-items: center; 
-    height: 100%;
+  display: flex;
+  gap: 20px; 
 }
+
+.container2 {
+  flex: 1; 
+}
+
+.calendario {
+  display: flex;
+  width: 100%;
+
+
+}
+
+
 
 .logoJav {
   width: 35%;       /* Ocupa el ancho completo del contenedor */
@@ -195,3 +206,5 @@ th {
 tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
+
