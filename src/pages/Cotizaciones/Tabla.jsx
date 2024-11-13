@@ -24,7 +24,11 @@ const CotizacionesTabla = ({ data, Facturar }) => {
             <td>{item.FechaEmision}</td>
             <td>{item.FechaVencimiento}</td>
             <td>{item.CodigoCli}</td>
-            <td>{item.Cliente.nombres}</td>
+            {item.Cliente.razonSocial != undefined ? (
+              <td>{item.Cliente.razonSocial}</td>
+            ) : (
+              <td> {item.Cliente.nombres} </td>
+            )}
             <td>{item.MontoTotal}</td>
             <td>{item.Status}</td>
             <td>

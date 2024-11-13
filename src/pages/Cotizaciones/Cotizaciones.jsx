@@ -28,7 +28,7 @@ const Cotizaciones = ({ user }) => {
       toast.info("Conectando base...");
       const conectarData = query(
         collection(firestore, "DataCotizaciones"),
-        orderBy("NumeroCotizacion", "asc")
+        orderBy("NumeroCotizacion", "desc")
       );
       const snapData = await getDocs(conectarData);
 
@@ -55,7 +55,7 @@ const Cotizaciones = ({ user }) => {
 
   const handleUpdateStatus = () => {
     console.log("Estado de la cotización actualizado");
-    getDataCotizaciones();  
+    getDataCotizaciones();
   };
 
   // Cliente Dinámico
@@ -147,11 +147,6 @@ const Cotizaciones = ({ user }) => {
 
         const newCodigoCli = incrementarCodigoCli(lastCodigoCli);
         const batch = writeBatch(firestore);
-
-        // Actualizar equipo (...map de equipos) restandole el stock segun cantidad llevada
-        // y añadiendole una Interaccion
-
-        // Agregar documento cotización con el CodigoCli respectivo
       } else {
         let ClienteUID = searchResults.UID;
         console.log("si existe");
