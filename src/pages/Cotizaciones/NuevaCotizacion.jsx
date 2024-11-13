@@ -4,6 +4,9 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import logo from "./../../assets/LogoFogel.png";
 import "./../../App.css";
+
+import { Calendar } from "primereact/calendar";
+
 import {
   ModalHeader,
   ModalActions,
@@ -494,62 +497,66 @@ const NuevaCotizacion = () => {
           <h3>Datos del Cliente</h3>
           <div className="p-grid">
             <div className="p-col">
-              <div className="field">
-                <label htmlFor="documento">Tipo de Documento</label>
-                <Dropdown
-                  id="documento"
-                  value={tipoDocumento}
-                  options={[
-                    { label: "RUC", value: "RUC" },
-                    { label: "DNI", value: "DNI" },
-                    {
-                      label: "CARNET DE EXTRANJERIA",
-                      value: "CARNET DE EXTRANJERIA",
-                    },
-                    { label: "PASAPORTE", value: "PASAPORTE" },
-                  ]}
-                  placeholder="Seleccionar tipo de documento"
-                  onChange={handleSelectTipoDocumento}
-                  required
-                  style={{ marginBottom: "15px", marginTop: "2px" }}
-                />
+              <div className="container">
+                <div className="container2">
+                  <label htmlFor="documento">Tipo de Documento</label>
+                  <Dropdown
+                    id="documento"
+                    value={tipoDocumento}
+                    options={[
+                      { label: "RUC", value: "RUC" },
+                      { label: "DNI", value: "DNI" },
+                      {
+                        label: "CARNET DE EXTRANJERIA",
+                        value: "CARNET DE EXTRANJERIA",
+                      },
+                      { label: "PASAPORTE", value: "PASAPORTE" },
+                    ]}
+                    placeholder="Seleccionar tipo de documento"
+                    onChange={handleSelectTipoDocumento}
+                    required
+                    style={{ marginBottom: "15px", marginTop: "2px" }}
+                  />
+                </div>
 
-                <label htmlFor="rucCliente">Número de Documento</label>
-                <InputText
-                  id="rucCliente"
-                  value={searchClienteRUC}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d*$/.test(value)) {
-                      if (tipoDocumento === "RUC") {
-                        if (value.length <= 11) {
-                          if (
-                            value === "" ||
-                            value.startsWith("10") ||
-                            value.startsWith("20") ||
-                            value.length < 2
-                          ) {
+                <div className="container2">
+                  <label htmlFor="rucCliente">Número de Documento</label>
+                  <InputText
+                    id="rucCliente"
+                    value={searchClienteRUC}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        if (tipoDocumento === "RUC") {
+                          if (value.length <= 11) {
+                            if (
+                              value === "" ||
+                              value.startsWith("10") ||
+                              value.startsWith("20") ||
+                              value.length < 2
+                            ) {
+                              setSearchClienteRUC(value);
+                            }
+                          }
+                        } else if (tipoDocumento === "DNI") {
+                          if (value.length <= 8) {
                             setSearchClienteRUC(value);
                           }
                         }
-                      } else if (tipoDocumento === "DNI") {
-                        if (value.length <= 8) {
-                          setSearchClienteRUC(value);
-                        }
                       }
-                    }
 
-                    handleSearch(value);
-                  }}
-                  maxLength={
-                    tipoDocumento === "RUC"
-                      ? 11
-                      : tipoDocumento === "DNI"
-                        ? 8
-                        : 0
-                  }
-                  required
-                />
+                      handleSearch(value);
+                    }}
+                    maxLength={
+                      tipoDocumento === "RUC"
+                        ? 11
+                        : tipoDocumento === "DNI"
+                          ? 8
+                          : 0
+                    }
+                    required
+                  />
+                </div>
               </div>
 
               {searchResults.map((client) => (
@@ -623,34 +630,40 @@ const NuevaCotizacion = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="field">
-                      <label htmlFor="nombres">Nombres</label>
-                      <InputText
-                        id="nombres"
-                        value={nombres}
-                        onChange={(e) => setNombres(e.target.value)}
-                        required
-                      />
-                    </div>
+                    <div className="container">
+                      <div className="container2">
+                        <label htmlFor="nombres">Nombres</label>
+                        <InputText
+                          id="nombres"
+                          value={nombres}
+                          onChange={(e) => setNombres(e.target.value)}
+                          required
+                        />
+                      </div>
 
-                    <div className="field">
-                      <label htmlFor="apellidoPaterno">Apellido Paterno</label>
-                      <InputText
-                        id="apellidoPaterno"
-                        value={apellidoPaterno}
-                        onChange={(e) => setApellidoPaterno(e.target.value)}
-                        required
-                      />
-                    </div>
+                      <div className="container2">
+                        <label htmlFor="apellidoPaterno">
+                          Apellido Paterno
+                        </label>
+                        <InputText
+                          id="apellidoPaterno"
+                          value={apellidoPaterno}
+                          onChange={(e) => setApellidoPaterno(e.target.value)}
+                          required
+                        />
+                      </div>
 
-                    <div className="field">
-                      <label htmlFor="apellidoMaterno">Apellido Materno</label>
-                      <InputText
-                        id="apellidoMaterno"
-                        value={apellidoMaterno}
-                        onChange={(e) => setApellidoMaterno(e.target.value)}
-                        required
-                      />
+                      <div className="container2">
+                        <label htmlFor="apellidoMaterno">
+                          Apellido Materno
+                        </label>
+                        <InputText
+                          id="apellidoMaterno"
+                          value={apellidoMaterno}
+                          onChange={(e) => setApellidoMaterno(e.target.value)}
+                          required
+                        />
+                      </div>
                     </div>
                   </>
                 )}
@@ -666,40 +679,47 @@ const NuevaCotizacion = () => {
                   />
                 </div>
 
-                <div className="field">
-                  <label htmlFor="correoCliente">Correo Electrónico</label>
-                  <InputText
-                    id="correoCliente"
-                    value={correoElectronico}
-                    onChange={(e) => setCorreoelectronico(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="field">
-                  <label htmlFor="numTelefono">Teléfono</label>
-                  <InputText
-                    id="numTelefono"
-                    value={numTelefono}
-                    onChange={(e) => setNumTelefono(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {!(
-                  tipoDocumento === "RUC" && searchClienteRUC.startsWith("20")
-                ) && (
-                  <div className="field">
-                    <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
-                    <input
-                      type="date"
-                      id="fechaNacimiento"
-                      value={fechaNacimiento}
-                      onChange={(e) => setFechaNacimiento(e.target.value)}
+                <div className="container">
+                  <div className="container2">
+                    <label htmlFor="correoCliente">Correo Electrónico</label>
+                    <InputText
+                      id="correoCliente"
+                      value={correoElectronico}
+                      onChange={(e) => setCorreoelectronico(e.target.value)}
                       required
                     />
                   </div>
-                )}
+                  <div className="container2">
+                    <label htmlFor="numTelefono">Teléfono</label>
+                    <InputText
+                      id="numTelefono"
+                      value={numTelefono}
+                      onChange={(e) => setNumTelefono(e.target.value)}
+                      required
+                    />
+                  </div>
+                  {!(
+                    tipoDocumento === "RUC" && searchClienteRUC.startsWith("20")
+                  ) && (
+                    <div className="container2">
+                      <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
+                      <Calendar
+                        id="fechaNacimiento"
+                        value={
+                          fechaNacimiento ? new Date(fechaNacimiento) : null
+                        }
+                        onChange={(e) => {
+                          const date = e.value;
+                          // Formatea la fecha como "Año/Mes/Día"
+                          const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+                          setFechaNacimiento(formattedDate); // Guarda la fecha como string
+                        }}
+                        required
+                        className="calendario"
+                      />
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
