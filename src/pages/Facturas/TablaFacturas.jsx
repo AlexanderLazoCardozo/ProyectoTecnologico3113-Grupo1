@@ -1,28 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import firebaseApp from "../../firebase/credenciales";
-import {
-  getDocs,
-  collection,
-  getFirestore,
-  query,
-  where,
-} from "firebase/firestore";
+import { getDocs, collection, getFirestore } from "firebase/firestore";
 import DataTable from "react-data-table-component";
 import {
   Container,
-  Grid,
-  Segment,
   Header,
-  Icon,
-  Input,
   Card,
-  List,
   Button,
   Modal,
-  Divider,
-  ModalHeader,
   ModalContent,
   ModalActions,
 } from "semantic-ui-react";
@@ -32,20 +19,31 @@ import LogoEmpresa from "./../../assets/factura-foguel.png";
 const firestore = getFirestore(firebaseApp);
 
 const TablaFacturas = ({ user }) => {
-  const [openDetallF, setOpenDetallF] = useState(false);
+  const [openDetallF, setOpenDetallF] = useState(null);
   const [facturasGenerales, setFacturasGenerales] = useState([]);
 
   const facturasCall = async () => {
     const query = collection(firestore, "FacturacionOficial");
-
     const getQuery = await getDocs(query);
-
+    const facturas = [];
     getQuery.forEach((doc) => {
-      setFacturasGenerales((prev) => [...prev, doc.data()]);
+      facturas.push(doc.data());
     });
-
-    console.log(facturasGenerales);
+    setFacturasGenerales(facturas); // Solo actualizar una vez
+    console.log(facturas);
   };
+
+  const handleModalOpen = (index) => {
+    setOpenDetallF(index); // Guardar el índice de la factura seleccionada
+  };
+
+  const handleModalClose = () => {
+    setOpenDetallF(null); // Cerrar el modal
+  };
+
+  useEffect(() => {
+    facturasCall(); // Llamada inicial para cargar las facturas
+  }, []);
 
   return (
     <NavTab user={user}>
@@ -87,16 +85,16 @@ const TablaFacturas = ({ user }) => {
               },
               {
                 name: "Fecha Vencimiento",
-                selector: (row) => row.FechaEmision,
+                selector: (row) => row.FechaVencimiento,
                 sortable: true,
               },
               {
                 name: "Acciones",
-                selector: (row) => (
+                selector: (row, index) => (
                   <Modal
-                    onClose={() => setOpenDetallF(false)}
-                    onOpen={() => setOpenDetallF(true)}
-                    open={openDetallF}
+                    onClose={handleModalClose}
+                    onOpen={() => handleModalOpen(index)}
+                    open={openDetallF === index} // Solo abrir el modal de la factura seleccionada
                     trigger={<Button>Ver</Button>}
                   >
                     <Modal.Header className="modal-header">
@@ -108,7 +106,7 @@ const TablaFacturas = ({ user }) => {
                       <div className="header-right">
                         <div className="ruc-info">RUC: 20551020313</div>
                         <div className="boleta-info">
-                          {row.Cliente.tipoDocumento != "RUC"
+                          {row.Cliente.tipoDocumento !== "RUC"
                             ? "Boleta"
                             : "Factura"}{" "}
                           Electrónica
@@ -117,39 +115,34 @@ const TablaFacturas = ({ user }) => {
                       </div>
                     </Modal.Header>
 
-                    <div class="cabezal">
-                      <br></br>
-                      Direccion Fiscal: CAL. SANTA LUCIA NRO. 336 URB.
-                      INDUSTRIAL LA AURORA ;<br></br>
+                    <div className="cabezal">
+                      Dirección Fiscal: CAL. SANTA LUCIA NRO. 336 URB.
+                      INDUSTRIAL LA AURORA;
+                      <br />
                       LIMA - LIMA - ATE
-                      <br></br>
-                      <br></br>
+                      <br />
+                      <br />
                       Dirección de establecimiento: CALLE SANTA LUCIA 336
-                      <br></br>
-                      <br></br>
+                      <br />
                       Ate - Lima - Lima
-                      <br></br>
-                      <br></br>
+                      <br />
                       E-mail: chuisa@servifogel.com / abustamante@servifogel.com
-                      /<br></br>
-                      gvalverde@servidogel.com
+                      / gvalverde@servidogel.com
                     </div>
 
                     <ModalContent className="modal-content">
                       <div className="grid-container">
                         <div className="grid-item label">
-                          {row.Cliente.tipoDocumento != "RUC"
+                          {row.Cliente.tipoDocumento !== "RUC"
                             ? "Documento"
                             : "RUC"}
                           : {row.Cliente.ruc}
                         </div>
                         <div className="grid-item label">
-                          Cliente:
-                          {row.Cliente.razonSocial ? (
-                            row.Cliente.razonSocial
-                          ) : (
-                            <>{row.Cliente.nombres}</>
-                          )}
+                          Cliente:{" "}
+                          {row.Cliente.razonSocial
+                            ? row.Cliente.razonSocial
+                            : row.Cliente.nombres}
                         </div>
                         <div>
                           <strong>Fecha de Emisión: </strong>
@@ -196,84 +189,45 @@ const TablaFacturas = ({ user }) => {
                               Cotización N° {row.NumeroCotizacion}
                             </div>
                           </div>
-                          <div className="grid-container2">
-                            BBVA - BANCO CONTINENTAL
-                            <br></br>
-                            Dolares Cta. Corriente: 0011-0372-0100031470-06
-                            <br></br>
-                            CCI: 01137200010003147006
-                            <br></br>
-                            Soles Cta.Corriente: 011-0372-0100033112-02
-                            <br></br>
-                            CCI: 01137200010003311202
-                          </div>
                         </div>
 
-                        {row.Cliente.tipoDocumento != "RUC" ? (
-                          <>
-                            {" "}
-                            <div className="SemiMaster2">
-                              <div class="salidas">
-                                <div className="salidasc">
-                                  Importe Total (Incluye IGV)
-                                </div>
-                                <div className="salidasc">S/</div>
-                                <div className="salidasc">
-                                  {row.MontoTotal.toFixed(2)}
-                                </div>
-                              </div>
+                        <div className="SemiMaster2">
+                          <div className="salidas">
+                            <div className="salidasc">Total Op. Gravada</div>
+                            <div className="salidasc">S/</div>
+                            <div className="salidasc">
+                              {row.SubTotal.toFixed(2)}
                             </div>
-                          </>
-                        ) : (
-                          <>
-                            {" "}
-                            <div className="SemiMaster2">
-                              <div class="salidas">
-                                <div className="salidasc">
-                                  Total Op. Gravada
-                                </div>
-                                <div className="salidasc">S/</div>
-                                <div className="salidasc">
-                                  {row.SubTotal.toFixed(2)}
-                                </div>
-                              </div>
-                              <div class="salidas">
-                                <div className="salidasc">Total IGV 18%</div>
-                                <div className="salidasc">S/</div>
-                                <div className="salidasc">
-                                  {row.IGV.toFixed(2)}
-                                </div>
-                              </div>
-                              <div class="salidas">
-                                <div className="salidasc">Importe Total</div>
-                                <div className="salidasc">S/</div>
-                                <div className="salidasc">
-                                  {row.MontoTotal.toFixed(2)}
-                                </div>
-                              </div>
+                          </div>
+                          <div className="salidas">
+                            <div className="salidasc">Total IGV 18%</div>
+                            <div className="salidasc">S/</div>
+                            <div className="salidasc">{row.IGV.toFixed(2)}</div>
+                          </div>
+                          <div className="salidas">
+                            <div className="salidasc">Importe Total</div>
+                            <div className="salidasc">S/</div>
+                            <div className="salidasc">
+                              {row.MontoTotal.toFixed(2)}
                             </div>
-                          </>
-                        )}
+                          </div>
+                        </div>
                       </div>
-                      <div class="lineadivisoria">
+
+                      <div className="lineadivisoria">
                         <p>
                           Representación impresa del Comprobante Electrónico
-                          puede ser
-                          <br></br>
-                          consultado en
+                          puede ser consultado en
                           https://proyecto-tecnologico3113-grupo1.vercel.app/
-                          <br></br>
+                          <br />
                           AUTORIZADO MEDIANTE RESOLUCION DE INTENDENCIA -
                           N°034-005-0011914/SUNAT
                         </p>
                       </div>
-                      <br></br>
+                      <br />
                     </ModalContent>
                     <ModalActions>
-                      <Button
-                        color="black"
-                        onClick={() => setOpenDetallF(false)}
-                      >
+                      <Button color="black" onClick={handleModalClose}>
                         Cerrar
                       </Button>
                     </ModalActions>
