@@ -24,6 +24,7 @@ import Inventario from "./pages/Inventario/Inventario";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TablaFacturas from "./pages/Facturas/TablaFacturas";
+import Equipos from "./pages/Equipos/Equipos";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -96,6 +97,7 @@ function App() {
             {user.rol === "Administrador" ? (
               <>
                 <Route path="/logistica" element={<Inventario user={user} />} />
+                <Route path="/equipos" element={<Equipos user={user} />} />
                 <Route path="/clientes" element={<Clientes user={user} />} />
                 <Route
                   path="/cotizaciones"

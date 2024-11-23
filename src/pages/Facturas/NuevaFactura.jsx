@@ -10,6 +10,7 @@ import {
   query,
   where,
   getDocs,
+  limit,
 } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 
@@ -42,6 +43,49 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
   );
   const igv = subtotal * 0.18;
   const total = subtotal + igv;
+
+  const manageEquipos = async () => {
+    for (let i = 0; i < factura.Equipos.length; i++) {
+      let codigoE = factura.Equipos[i].codigoEquipo;
+      let cant = factura.Equipos[i].cantidad;
+
+      console.log("Equipos Codigo: ", factura.Equipos[i].codigoEquipo);
+      console.log("Equipos Cantidad: ", factura.Equipos[i].cantidad);
+
+      const q = query(
+        collection(firestore, "EquipoAlmacen"),
+        where("codigoProducto", "==", codigoE),
+        where("status", "==", "En Almacen"),
+        limit(cant)
+      );
+
+      const querySnap = await getDocs(q);
+
+      //verificar que existe cantidad exacta segun limit
+      if (querySnap.docs.length == cant) {
+        console.log("Existen", querySnap.docs.length);
+        console.log("ID", querySnap.docs.length);
+      } else {
+        console.log("No existen", querySnap);
+      }
+
+      //extraer id de documentos
+      querySnap.docs.forEach((doc) => {
+        console.log("ID", doc.ref);
+
+        try {
+          updateDoc(doc.ref, {
+            status: "Despachado",
+            UltimoPoseedor: factura.CodigoCli,
+          });
+
+          console.log("Actualizado");
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +135,8 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         where("NumeroCotizacion", "==", factura.NumeroCotizacion)
       );
       const querySnapshot = await getDocs(q);
+
+      manageEquipos();
 
       if (!querySnapshot.empty) {
         const docSnap = querySnapshot.docs[0];
@@ -263,6 +309,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         >
           Facturar
         </Button>
+        {/* <Button onClick={manageEquipos}>Ver</Button> */}
       </Modal.Content>
     </Modal>
   );
