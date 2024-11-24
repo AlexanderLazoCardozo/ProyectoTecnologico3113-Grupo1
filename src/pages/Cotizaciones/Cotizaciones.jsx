@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
+import VencimientoCotizaciones from "../../components/TiempoCotizacion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -177,6 +178,7 @@ const Cotizaciones = ({ user }) => {
             onUpdateStatus={handleUpdateStatus}
           />
         )}
+        <VencimientoCotizaciones />
       </Card>
     </NavTab>
   );

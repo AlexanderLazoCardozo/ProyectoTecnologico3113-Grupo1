@@ -51,6 +51,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         direccion: factura.Cliente.direccion,
         ruc: factura.Cliente.ruc,
         CodigoCli: factura.CodigoCli,
+        tipoDocumento: factura.Cliente.tipoDocumento,
         razonSocial: factura.Cliente.razonSocial || undefined, // Usa razonSocial si existe; de lo contrario, será undefined
         nombres: factura.Cliente.razonSocial
           ? undefined
