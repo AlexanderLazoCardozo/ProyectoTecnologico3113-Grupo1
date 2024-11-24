@@ -1,24 +1,64 @@
 import { Button, Icon } from "semantic-ui-react";
 import DetalleCotizacion from "../DetalleCotizacion/DetalleCotizacion";
+import { useMemo, useState } from "react";
+import DropdownFiltro from "../../components/Tabla/DropdownFiltro";
 
-const CotizacionesTabla = ({ data, Facturar }) => {
+const CotizacionesTabla = ({ data, facturar }) => {
+  const [codClienteFiltro, setCodClienteFiltro] = useState("");
+  const [estadoFiltro, setEstadoFiltro] = useState("");
+  const [fechaCotizacionFiltro, setFechaCotizacionFiltro] = useState("");
+
+  const dataFiltrada = useMemo(
+    () =>
+      data.filter(
+        (row) =>
+          (codClienteFiltro ? row.CodigoCli === codClienteFiltro : true) &&
+          (estadoFiltro ? row.Status === estadoFiltro : true) &&
+          (fechaCotizacionFiltro
+            ? row.FechaEmision === fechaCotizacionFiltro
+            : true)
+      ),
+    [data, codClienteFiltro, estadoFiltro, fechaCotizacionFiltro]
+  );
+
   return (
     <table>
       <thead>
         <tr>
           <th>Nro Cotización</th>
-          <th>Fecha de Cotización</th>
+          <th>
+            <DropdownFiltro
+              tableData={data}
+              header="Fecha de Cotizacion"
+              campo="FechaEmision"
+              setFiltro={setFechaCotizacionFiltro}
+            />
+          </th>
           <th>Fecha de Vencimiento</th>
-          <th>Código de Cliente</th>
+          <th>
+            <DropdownFiltro
+              tableData={data}
+              header="Código de Cliente"
+              campo="CodigoCli"
+              setFiltro={setCodClienteFiltro}
+            />
+          </th>
           <th>Nombre de Cliente</th>
           <th>Monto Total</th>
-          <th>Estado</th>
+          <th>
+            <DropdownFiltro
+              tableData={data}
+              header="Estado"
+              campo="Status"
+              setFiltro={setEstadoFiltro}
+            />
+          </th>
           <th>Ver</th>
           <th>Facturar</th>
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
+        {dataFiltrada.map((item, index) => (
           <tr key={index}>
             <td>{item.NumeroCotizacion}</td>
             <td>{item.FechaEmision}</td>
@@ -38,7 +78,7 @@ const CotizacionesTabla = ({ data, Facturar }) => {
               <Button
                 icon
                 onClick={
-                  item.Status !== "Facturado" ? () => Facturar(item) : null
+                  item.Status !== "Facturado" ? () => facturar(item) : null
                 }
                 disabled={item.Status === "Facturado"}
               >

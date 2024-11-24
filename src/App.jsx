@@ -58,7 +58,6 @@ function App() {
           rol: dato[1],
         };
         setUser(userData);
-        console.log("Datos de rol:", userData);
       })
       .catch((error) => {
         console.error("Error al obtener datos de rol:", error);

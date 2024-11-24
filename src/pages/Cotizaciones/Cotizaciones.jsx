@@ -37,7 +37,6 @@ const Cotizaciones = ({ user }) => {
       });
 
       setDataCotizaciones(docsMap);
-      console.log("Cotizaciones: ", docsMap);
       toast.success("Datos obtenidos exitosamente.");
     } catch (error) {
       console.log(error);
@@ -45,7 +44,7 @@ const Cotizaciones = ({ user }) => {
   };
 
   //  Facturación
-  const Facturar = (factura) => {
+  const facturar = (factura) => {
     setSelectedFactura(factura);
   };
 
@@ -168,7 +167,7 @@ const Cotizaciones = ({ user }) => {
         </div>
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
-          <CotizacionesTabla data={dataCotizaciones} Facturar={Facturar} />
+          <CotizacionesTabla data={dataCotizaciones} facturar={facturar} />
         </Container>
         {selectedFactura && (
           <NuevaFactura
