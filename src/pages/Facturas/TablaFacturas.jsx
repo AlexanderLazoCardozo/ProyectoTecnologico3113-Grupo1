@@ -14,6 +14,7 @@ import {
 import NavTab from "../../components/NavTab";
 import LogoEmpresa from "./../../assets/factura-foguel.png";
 import DropdownFiltro from "../../components/Tabla/DropdownFiltro";
+import Buscador from "../../components/Buscador";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -22,6 +23,7 @@ const TablaFacturas = ({ user }) => {
   const [codClienteFiltro, setCodClienteFiltro] = useState("");
   const [fechaEmisionFiltro, setFechaEmisionFiltro] = useState("");
   const [facturasGenerales, setFacturasGenerales] = useState([]);
+  const [facturasBuscadas, setFacturasBuscadas] = useState([]);
 
   const facturasCall = async () => {
     const query = collection(firestore, "FacturacionOficial");
@@ -31,6 +33,7 @@ const TablaFacturas = ({ user }) => {
       facturas.push(doc.data());
     });
     setFacturasGenerales(facturas); // Solo actualizar una vez
+    setFacturasBuscadas(facturas);
     console.log(facturas);
   };
 
@@ -48,14 +51,14 @@ const TablaFacturas = ({ user }) => {
 
   const facturasFiltradas = useMemo(
     () =>
-      facturasGenerales.filter(
+      facturasBuscadas.filter(
         (row) =>
           (codClienteFiltro
             ? row.Cliente.CodigoCli === codClienteFiltro
             : true) &&
           (fechaEmisionFiltro ? row.FechaEmision === fechaEmisionFiltro : true)
       ),
-    [facturasGenerales, codClienteFiltro, fechaEmisionFiltro]
+    [facturasBuscadas, codClienteFiltro, fechaEmisionFiltro]
   );
 
   return (
@@ -66,6 +69,12 @@ const TablaFacturas = ({ user }) => {
           <Button color="yellow" onClick={facturasCall}>
             Conectar Facturas
           </Button>
+          <Buscador
+            campo="NumeroFactura"
+            lista={facturasGenerales}
+            setListaFiltrada={setFacturasBuscadas}
+            placeholder="Buscar en Facturas..."
+          />
         </div>
         <br />
         <Container style={{ maxHeight: "auto", overflowY: "auto" }}>
