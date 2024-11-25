@@ -1,88 +1,100 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import firebaseApp from "../../src/firebase/credenciales";
 import {
+  getFirestore,
   collection,
   getDocs,
   updateDoc,
   doc,
-  increment,
-  getFirestore,
 } from "firebase/firestore";
-import firebaseApp from "../../src/firebase/credenciales";
 
 const db = getFirestore(firebaseApp);
 
-const verificarVencimientoCotizaciones = async () => {
-  try {
-    const cotizacionesRef = collection(db, "DataCotizaciones");
-    const snapshot = await getDocs(cotizacionesRef);
-    const hoy = new Date();
+const VencimientoCotizaciones = () => {
+  useEffect(() => {
+    const checkVencimiento = async () => {
+      const cotizacionesRef = collection(db, "DataCotizaciones");
+      const querySnapshot = await getDocs(cotizacionesRef);
 
-    snapshot.forEach(async (docSnap) => {
-      const cotizacion = docSnap.data();
+      querySnapshot.forEach(async (docSnapshot) => {
+        const cotizacion = docSnapshot.data();
+        const fechaVencimiento = cotizacion.FechaVencimiento;
 
-      if (cotizacion.Status === "Facturado" || cotizacion.VencidaVerificada) {
-        console.log(`Cotización ${docSnap.id} ya ha sido procesada.`);
-        return;
-      }
+        const fechaActual = new Date();
+        fechaActual.setHours(0, 0, 0, 0);
 
-      const fechaVencimiento = new Date(
-        cotizacion.FechaVencimiento.split("/").reverse().join("-")
-      );
+        const fechaVencimientoDate = new Date(
+          fechaVencimiento.split("/").reverse().join("-")
+        );
+        fechaVencimientoDate.setHours(0, 0, 0, 0);
 
-      if (hoy >= fechaVencimiento) {
-        const cotizacionDocRef = doc(db, "DataCotizaciones", docSnap.id);
+        const estadoCotizacion = cotizacion.Status;
 
-        await updateDoc(cotizacionDocRef, {
-          Status: "Vencida",
-        });
-        console.log(`Cotización ${docSnap.id} actualizada a vencida.`);
-
-        //  Falta implementar esto sale error `
-        if (cotizacion.Equipos && Array.isArray(cotizacion.Equipos)) {
-          cotizacion.Equipos.forEach(async (equipo) => {
-            const codigoEquipo = equipo.codigoEquipo;
-            const cantidad = equipo.cantidad;
-            if (codigoEquipo && cantidad !== undefined) {
-              const equipoRef = doc(db, "EquipoInventory", codigoEquipo);
-
-              await updateDoc(equipoRef, {
-                Stock: increment(cantidad),
-              });
-
-              console.log(
-                `Stock devuelto: ${cantidad} unidades de ${codigoEquipo}.`
-              );
-            } else {
-              console.log(
-                `Datos incompletos para el equipo con código ${equipo.codigoEquipo}`
-              );
-            }
+        if (
+          (estadoCotizacion === "En espera" ||
+            estadoCotizacion === "Facturado") &&
+          fechaVencimientoDate < fechaActual &&
+          cotizacion.Status !== "Vencida"
+        ) {
+          // Actualizar el estado de la cotización
+          const cotizacionRef = doc(db, "DataCotizaciones", docSnapshot.id);
+          await updateDoc(cotizacionRef, {
+            Status: "Vencida",
           });
+
+          console.log(
+            `Cotización ${cotizacion.CodigoCli} actualizada a vencida.`
+          );
+
+          for (const equipo of cotizacion.Equipos) {
+            if (!equipo.stockDevuelto) {
+              await devolverStock(equipo.codigoEquipo, equipo.cantidad);
+
+              await updateDoc(cotizacionRef, {
+                stockDevuelto: true,
+              });
+            }
+          }
         }
+      });
+    };
+
+    checkVencimiento();
+  }, []);
+
+  // Función para  el stock  en el inventario
+  const devolverStock = async (codigoEquipo, cantidad) => {
+    const inventarioRef = collection(db, "EquipoInventory");
+    const querySnapshot = await getDocs(inventarioRef);
+
+    let equipoEncontrado = false;
+
+    querySnapshot.forEach(async (docSnapshot) => {
+      const equipo = docSnapshot.data();
+
+      if (equipo.CodigoEquipo === codigoEquipo) {
+        const nuevoStock = equipo.Stock + cantidad;
+
+        const equipoRef = doc(db, "EquipoInventory", docSnapshot.id);
+        await updateDoc(equipoRef, {
+          Stock: nuevoStock,
+        });
+
+        console.log(
+          `Stock del equipo ${codigoEquipo} actualizado. Nuevo stock: ${nuevoStock}`
+        );
+        equipoEncontrado = true;
       }
     });
 
-    console.log("Verificación completada.");
-  } catch (error) {
-    console.error("Error al verificar:", error);
-  }
-};
+    if (!equipoEncontrado) {
+      console.log(
+        `El equipo con código ${codigoEquipo} no se encontró en el inventario.`
+      );
+    }
+  };
 
-const VencimientoCotizaciones = () => {
-  useEffect(() => {
-    verificarVencimientoCotizaciones();
-
-    const interval = setInterval(
-      () => {
-        verificarVencimientoCotizaciones();
-      },
-      24 * 60 * 60 * 1000 // 24 horas
-    );
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return null;
+  return <div></div>;
 };
 
 export default VencimientoCotizaciones;
