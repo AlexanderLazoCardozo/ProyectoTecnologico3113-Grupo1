@@ -1,0 +1,3 @@
+.rdt_TableHead > .rdt_TableHeadRow > .rdt_TableCol .rdt_TableCol_Sortable {
+    overflow: visible !important;
+}

@@ -7,11 +7,15 @@ import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import firebaseApp from "../../firebase/credenciales";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./inventario.css";
+import Buscador from "../../components/Buscador";
 
 const firestore = getFirestore(firebaseApp);
 
 const Inventario = ({ user }) => {
   const [dataInventory, setDataInventory] = useState([]);
+  const [inventarioFiltrado, setInventarioFiltrado] = useState([]);
+  const [busquedaInventario, setBusquedaInventario] = useState("");
 
   const getDataInventory = async () => {
     try {
@@ -26,6 +30,7 @@ const Inventario = ({ user }) => {
       });
 
       setDataInventory(docsMap);
+      setInventarioFiltrado(docsMap);
 
       console.log("Inventario: ", docsMap);
       toast.success("Datos obtenidos exitosamente.");
@@ -39,15 +44,15 @@ const Inventario = ({ user }) => {
       <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
         <Header as="h1">Inventario</Header>
         <div>
-          {/* <Input
-              placeholder="Buscar en inventario..."
-              // value={busquedaInventario}
-              // onChange={(e) => setBusquedaInventario(e.target.value)}
-              className="margen-derecho"
-            /> */}
           <Button color="yellow" onClick={getDataInventory}>
             Conectar Equipos
           </Button>
+          <Buscador
+            campo="CodigoEquipo"
+            lista={dataInventory}
+            setListaFiltrada={setInventarioFiltrado}
+            placeholder="Buscar en inventario..."
+          />
           {/* <Button
               color="black"
               onClick={handleNuevo}
@@ -58,7 +63,7 @@ const Inventario = ({ user }) => {
         </div>
         <br />
         <Container>
-          <Tabla data={dataInventory} />
+          <Tabla data={inventarioFiltrado} />
         </Container>
       </Card>
     </NavTab>
