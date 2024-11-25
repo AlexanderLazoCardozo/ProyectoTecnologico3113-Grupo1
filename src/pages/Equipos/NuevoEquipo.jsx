@@ -2,9 +2,13 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
+  getDocs,
   getFirestore,
   query,
   setDoc,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import React, { useState } from "react";
 import {
@@ -38,6 +42,8 @@ const NuevoEquipo = () => {
   };
 
   const crearProducto = async () => {
+    toast.info("Procesando equipo...");
+
     try {
       setOpen(false);
 
@@ -48,12 +54,32 @@ const NuevoEquipo = () => {
 
       await addDoc(ref, { ...productForm, fechaCreacion: fechaFormatoEsp });
 
-      toast.success("Equipo agregado exitosamente.");
       setProductForm({
         codigoProducto: "",
         numSerie: "",
         status: "",
       });
+
+      const refInventory = query(
+        collection(firestore, "EquipoInventory"),
+        where("CodigoEquipo", "==", productForm.codigoProducto)
+      );
+
+      const querySnapshot = await getDocs(refInventory);
+
+      let dataEquipo = [];
+
+      querySnapshot.forEach((doc) => {
+        dataEquipo = [doc.id, doc.data().Stock];
+      });
+
+      console.log(dataEquipo);
+
+      updateDoc(doc(firestore, "EquipoInventory", dataEquipo[0]), {
+        Stock: dataEquipo[1] + 1,
+      });
+
+      toast.success("Equipo agregado exitosamente.");
     } catch (error) {
       console.log(error);
     }
