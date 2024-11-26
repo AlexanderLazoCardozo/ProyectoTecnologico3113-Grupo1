@@ -62,7 +62,11 @@ const Cotizaciones = ({ user }) => {
 
   const EliminarCotizacion = async (cotizacion) => {
     try {
-      const cotizacionRef = doc(firestore, "DataCotizaciones", cotizacion.NumeroCotizacion);
+      const cotizacionRef = doc(
+        firestore,
+        "DataCotizaciones",
+        cotizacion.NumeroCotizacion
+      );
       await deleteDoc(cotizacionRef);
 
       const nuevasCotizaciones = dataCotizaciones.filter(
@@ -101,10 +105,9 @@ const Cotizaciones = ({ user }) => {
         </div>
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
-          <CotizacionesTabla data={cotizacionesFiltradas} facturar={facturar} />
           <CotizacionesTabla
             data={dataCotizaciones}
-            Facturar={Facturar}
+            facturar={facturar}
             Eliminar={EliminarCotizacion}
           />
         </Container>

@@ -110,7 +110,7 @@ const TablaFacturas = ({ user }) => {
                   <td>{item.NumeroFactura}</td>
                   <td>{item.NumeroCotizacion}</td>
                   <td>{item.Cliente.CodigoCli}</td>
-                  <td>{item.MontoTotal}</td>
+                  <td>{item.MontoTotal.toFixed(2)}</td>
                   <td>{item.FechaEmision}</td>
                   <td>{item.FechaVencimiento}</td>
                   <td>
