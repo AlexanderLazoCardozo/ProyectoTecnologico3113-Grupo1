@@ -13,6 +13,7 @@
     "final-form": "^4.20.10",
     "firebase": "^10.13.2",
     "install": "^0.13.0",
+    "lodash": "^4.17.21",
     "npm": "^10.9.0",
     "prettier": "^3.3.3",
     "primeflex": "^3.3.1",

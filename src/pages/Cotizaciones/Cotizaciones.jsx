@@ -16,12 +16,14 @@ import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
+import Buscador from "../../components/Buscador";
 
 const firestore = getFirestore(firebaseApp);
 
 const Cotizaciones = ({ user }) => {
   const [open, setOpen] = React.useState(false);
   const [dataCotizaciones, setDataCotizaciones] = useState([]);
+  const [cotizacionesFiltradas, setCotizacionesFiltradas] = useState([]);
   const [selectedFactura, setSelectedFactura] = useState(null);
 
   const getDataCotizaciones = async () => {
@@ -38,14 +40,14 @@ const Cotizaciones = ({ user }) => {
       });
 
       setDataCotizaciones(docsMap);
-      console.log("Cotizaciones: ", docsMap);
+      setCotizacionesFiltradas(docsMap);
       toast.success("Datos obtenidos exitosamente.");
     } catch (error) {
       console.log(error);
     }
   };
 
-  const Facturar = (factura) => {
+  const facturar = (factura) => {
     setSelectedFactura(factura);
   };
 
@@ -77,16 +79,29 @@ const Cotizaciones = ({ user }) => {
 
   return (
     <NavTab user={user}>
-      <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
+      <Card
+        style={{
+          margin: "20px",
+          width: "auto",
+          padding: "20px",
+        }}
+      >
         <Header as="h1">Cotizaciones</Header>
         <div>
           <Button color="yellow" onClick={getDataCotizaciones}>
             Conectar Cotizaciones
           </Button>
+          <Buscador
+            campo="NumeroCotizacion"
+            lista={dataCotizaciones}
+            setListaFiltrada={setCotizacionesFiltradas}
+            placeholder="Buscar en Cotizaciones..."
+          />
           <NuevaCotizacion />
         </div>
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <CotizacionesTabla data={cotizacionesFiltradas} facturar={facturar} />
           <CotizacionesTabla
             data={dataCotizaciones}
             Facturar={Facturar}
