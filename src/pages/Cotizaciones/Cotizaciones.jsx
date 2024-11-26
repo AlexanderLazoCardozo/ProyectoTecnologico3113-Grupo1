@@ -7,7 +7,8 @@ import {
   getFirestore,
   orderBy,
   query,
-  where,
+  doc,
+  deleteDoc,
 } from "firebase/firestore";
 import { Button, Card, Container, Header } from "semantic-ui-react";
 import { ToastContainer, toast } from "react-toastify";
@@ -44,7 +45,6 @@ const Cotizaciones = ({ user }) => {
     }
   };
 
-  //  Facturación
   const Facturar = (factura) => {
     setSelectedFactura(factura);
   };
@@ -58,101 +58,20 @@ const Cotizaciones = ({ user }) => {
     getDataCotizaciones();
   };
 
-  // Cliente Dinámico
-  const [searchClienteRUC, setSearchClienteRUC] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedClient, setSelectedClient] = useState(null);
-
-  const handleSearch = async (term) => {
-    setSearchClienteRUC(term.toUpperCase());
-    const querySnapshot = await getDocs(
-      query(
-        collection(firestore, "DataComercialOficial"),
-        where("documento", "==", term)
-      )
-    );
-    const results = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setSearchResults(results);
-    if (results.length > 0) {
-      handleSelectClient(results[0]);
-    } else {
-      handleSelectClient();
-    }
-  };
-
-  const handleSelectClient = (client) => {
-    setSelectedClient(client);
-  };
-
-  // Inventario Dinámico
-  const [equipos, setEquipos] = useState([]);
-  const [selectedEquipo, setSelectedEquipo] = useState("");
-  const [stock, setStock] = useState("");
-
-  useEffect(() => {
-    const fetchEquipos = async () => {
-      try {
-        const conectarEquipos = query(collection(firestore, "EquipoInventory"));
-        const snapEquipos = await getDocs(conectarEquipos);
-
-        const equiposList = snapEquipos.docs.map((doc) => ({
-          id: doc.id,
-          codigoEquipo: doc.data().CodigoEquipo,
-          stock: doc.data().Stock,
-          direccion: doc.data().Direccion,
-        }));
-
-        setEquipos(equiposList);
-      } catch (error) {
-        console.error("Error fetching equipos:", error);
-      }
-    };
-
-    fetchEquipos();
-  }, []);
-
-  const handleSelectChange = (e) => {
-    const selectedCodigo = e.target.value;
-
-    const equipo = equipos.find(
-      (equipo) => equipo.codigoEquipo === selectedCodigo
-    );
-    if (equipo) {
-      setSelectedEquipo(selectedCodigo);
-      setStock(equipo.stock);
-    }
-  };
-
-  const [equiposSalida, setEquiposSalida] = useState([]);
-
-  const handleConfirmSalida = async () => {
+  const EliminarCotizacion = async (cotizacion) => {
     try {
-      if (searchResults.length === 0) {
-        // Generar un CodigoCli respectivo si el cliente no existe
-        const q = query(
-          collection(firestore, "DataComercialOficial"),
-          orderBy("CodigoCli", "desc"),
-          limit(1)
-        );
-        const snapshot = await getDocs(q);
-        let lastCodigoCli = "CLI0000";
+      const cotizacionRef = doc(firestore, "DataCotizaciones", cotizacion.NumeroCotizacion);
+      await deleteDoc(cotizacionRef);
 
-        if (!snapshot.empty) {
-          const lastDoc = snapshot.docs[0];
-          lastCodigoCli = lastDoc.data().CodigoCli;
-        }
+      const nuevasCotizaciones = dataCotizaciones.filter(
+        (item) => item.NumeroCotizacion !== cotizacion.NumeroCotizacion
+      );
+      setDataCotizaciones(nuevasCotizaciones);
 
-        const newCodigoCli = incrementarCodigoCli(lastCodigoCli);
-        const batch = writeBatch(firestore);
-      } else {
-        let ClienteUID = searchResults.UID;
-        console.log("si existe");
-      }
+      toast.success("Cotización eliminada exitosamente.");
     } catch (error) {
-      console.log(error);
+      console.error("Error al eliminar la cotización:", error);
+      toast.error("Hubo un error al eliminar la cotización.");
     }
   };
 
@@ -168,7 +87,11 @@ const Cotizaciones = ({ user }) => {
         </div>
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
-          <CotizacionesTabla data={dataCotizaciones} Facturar={Facturar} />
+          <CotizacionesTabla
+            data={dataCotizaciones}
+            Facturar={Facturar}
+            Eliminar={EliminarCotizacion}
+          />
         </Container>
         {selectedFactura && (
           <NuevaFactura

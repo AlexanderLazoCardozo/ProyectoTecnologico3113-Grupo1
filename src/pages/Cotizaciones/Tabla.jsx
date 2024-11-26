@@ -1,7 +1,7 @@
 import { Button, Icon } from "semantic-ui-react";
 import DetalleCotizacion from "../DetalleCotizacion/DetalleCotizacion";
 
-const CotizacionesTabla = ({ data, Facturar }) => {
+const CotizacionesTabla = ({ data, Facturar, Eliminar }) => {
   return (
     <table>
       <thead>
@@ -15,6 +15,7 @@ const CotizacionesTabla = ({ data, Facturar }) => {
           <th>Estado</th>
           <th>Ver</th>
           <th>Facturar</th>
+          <th>Eliminar</th>
         </tr>
       </thead>
       <tbody>
@@ -27,7 +28,7 @@ const CotizacionesTabla = ({ data, Facturar }) => {
             {item.Cliente.razonSocial != undefined ? (
               <td>{item.Cliente.razonSocial}</td>
             ) : (
-              <td> {item.Cliente.nombres} </td>
+              <td>{item.Cliente.nombres}</td>
             )}
             <td>{item.MontoTotal}</td>
             <td>{item.Status}</td>
@@ -37,17 +38,24 @@ const CotizacionesTabla = ({ data, Facturar }) => {
             <td>
               <Button
                 icon
-                onClick={
-                  item.Status !== "Facturado" ? () => Facturar(item) : null
-                }
-                disabled={item.Status === "Facturado"}
+                onClick={item.Status !== "Facturado" ? () => Facturar(item) : null}
+                disabled={item.Status === "Facturado" || item.Status === "Vencida"}
               >
                 <Icon
                   name="file invoice"
                   style={{
-                    color: item.Status === "Facturado" ? "gray" : "black",
+                    color: item.Status === "Facturado" || item.Status === "Vencida" ? "gray" : "black",
                   }}
                 />
+              </Button>
+            </td>
+            <td>
+              <Button
+                icon
+                onClick={() => Eliminar(item)} 
+                disabled={item.Status === "Facturado" || item.Status === "Vencida"} 
+              >
+                <Icon name="trash" style={{ color: "red" }} />
               </Button>
             </td>
           </tr>
