@@ -19,12 +19,19 @@ const CotizacionesTabla = ({ data, Facturar }) => {
       </thead>
       <tbody>
         {data.map((item, index) => (
-          <tr key={index}>
+          <tr
+            key={index}
+            style={{
+              backgroundColor: item.Status === "Vencida" ? "#f0f0f0" : "white",
+              color: item.Status === "Vencida" ? "gray" : "inherit",
+              pointerEvents: item.Status === "Vencida" ? "none" : "auto",
+            }}
+          >
             <td>{item.NumeroCotizacion}</td>
             <td>{item.FechaEmision}</td>
             <td>{item.FechaVencimiento}</td>
             <td>{item.CodigoCli}</td>
-            {item.Cliente.razonSocial != undefined ? (
+            {item.Cliente.razonSocial !== undefined ? (
               <td>{item.Cliente.razonSocial}</td>
             ) : (
               <td> {item.Cliente.nombres} </td>
@@ -38,14 +45,21 @@ const CotizacionesTabla = ({ data, Facturar }) => {
               <Button
                 icon
                 onClick={
-                  item.Status !== "Facturado" ? () => Facturar(item) : null
+                  item.Status !== "Facturado" && item.Status !== "Vencida"
+                    ? () => Facturar(item)
+                    : null
                 }
-                disabled={item.Status === "Facturado"}
+                disabled={
+                  item.Status === "Facturado" || item.Status === "Vencida"
+                }
               >
                 <Icon
                   name="file invoice"
                   style={{
-                    color: item.Status === "Facturado" ? "gray" : "black",
+                    color:
+                      item.Status === "Facturado" || item.Status === "Vencida"
+                        ? "gray"
+                        : "black",
                   }}
                 />
               </Button>
