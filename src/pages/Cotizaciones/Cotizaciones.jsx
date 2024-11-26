@@ -9,7 +9,6 @@ import {
   query,
   doc,
   deleteDoc,
-  onSnapshot,
   where,
   updateDoc,
 } from "firebase/firestore";
@@ -59,7 +58,6 @@ const Cotizaciones = ({ user }) => {
 
   const handleUpdateStatus = () => {
     console.log("Estado de la cotización actualizado");
-    getDataCotizaciones();
   };
 
   const EliminarCotizacion = async (cotizacion) => {
