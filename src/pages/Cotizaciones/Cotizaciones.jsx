@@ -3,7 +3,7 @@ import NavTab from "../../components/NavTab";
 import firebaseApp from "../../firebase/credenciales";
 import {
   collection,
-  getDocs,
+  onSnapshot,
   getFirestore,
   orderBy,
   query,
@@ -17,6 +17,7 @@ import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
 import Buscador from "../../components/Buscador";
+import VencimientoCotizaciones from "../../components/TiempoCotizacion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -26,26 +27,23 @@ const Cotizaciones = ({ user }) => {
   const [cotizacionesFiltradas, setCotizacionesFiltradas] = useState([]);
   const [selectedFactura, setSelectedFactura] = useState(null);
 
-  const getDataCotizaciones = async () => {
-    try {
-      toast.info("Conectando base...");
-      const conectarData = query(
-        collection(firestore, "DataCotizaciones"),
-        orderBy("NumeroCotizacion", "desc")
-      );
-      const snapData = await getDocs(conectarData);
+  useEffect(() => {
+    toast.info("Conectando base...");
 
-      const docsMap = snapData.docs.map((doc) => {
-        return doc.data();
-      });
+    const conectarData = query(
+      collection(firestore, "DataCotizaciones"),
+      orderBy("NumeroCotizacion", "desc")
+    );
 
+    const unsubscribe = onSnapshot(conectarData, (snapshot) => {
+      const docsMap = snapshot.docs.map((doc) => doc.data());
       setDataCotizaciones(docsMap);
-      setCotizacionesFiltradas(docsMap);
+      console.log("Cotizaciones (realtime):", docsMap);
       toast.success("Datos obtenidos exitosamente.");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const facturar = (factura) => {
     setSelectedFactura(factura);
@@ -92,9 +90,6 @@ const Cotizaciones = ({ user }) => {
       >
         <Header as="h1">Cotizaciones</Header>
         <div>
-          <Button color="yellow" onClick={getDataCotizaciones}>
-            Conectar Cotizaciones
-          </Button>
           <Buscador
             campo="NumeroCotizacion"
             lista={dataCotizaciones}
