@@ -46,7 +46,7 @@ const Equipos = ({ user }) => {
         }}
       >
         <div>
-          <h1> Equipos Fogel </h1>
+          <h1> Inventario </h1>
 
           <Button color="yellow" onClick={getDataEquipos}>
             Conectar

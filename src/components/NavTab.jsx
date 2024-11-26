@@ -46,11 +46,11 @@ const NavTab = ({ children, user }) => {
         >
           <Menu.Item as={NavLink} to="/logistica" style={{ fontSize: "14px" }}>
             <Image src={logoFogel} style={{ width: "100%" }} />
-            Logistica
+            Equipos
           </Menu.Item>
           <Menu.Item as={NavLink} to="/equipos" style={{ fontSize: "14px" }}>
             <Icon name="dolly flatbed" size="mini" />
-            Equipos
+            Inventario
           </Menu.Item>
           {user.rol != "Administrador" ? (
             <></>

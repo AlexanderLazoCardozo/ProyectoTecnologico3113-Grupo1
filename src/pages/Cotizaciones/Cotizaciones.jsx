@@ -9,6 +9,9 @@ import {
   query,
   doc,
   deleteDoc,
+  onSnapshot,
+  where,
+  updateDoc,
 } from "firebase/firestore";
 import { Button, Card, Container, Header } from "semantic-ui-react";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,6 +20,7 @@ import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
 import NuevaFactura from "../Facturas/NuevaFactura";
 import Buscador from "../../components/Buscador";
+import { update } from "lodash";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -33,14 +37,15 @@ const Cotizaciones = ({ user }) => {
         collection(firestore, "DataCotizaciones"),
         orderBy("NumeroCotizacion", "desc")
       );
-      const snapData = await getDocs(conectarData);
 
-      const docsMap = snapData.docs.map((doc) => {
-        return doc.data();
+      const snap = onSnapshot(conectarData, (querySnapshot) => {
+        const docsMap = querySnapshot.docs.map((doc) => {
+          return doc.data();
+        });
+        setDataCotizaciones(docsMap);
+        setCotizacionesFiltradas(docsMap);
       });
 
-      setDataCotizaciones(docsMap);
-      setCotizacionesFiltradas(docsMap);
       toast.success("Datos obtenidos exitosamente.");
     } catch (error) {
       console.log(error);
@@ -62,17 +67,31 @@ const Cotizaciones = ({ user }) => {
 
   const EliminarCotizacion = async (cotizacion) => {
     try {
-      const cotizacionRef = doc(
-        firestore,
-        "DataCotizaciones",
-        cotizacion.NumeroCotizacion
-      );
+      const cotizacionRef = doc(firestore, "DataCotizaciones", cotizacion.UID);
       await deleteDoc(cotizacionRef);
 
-      const nuevasCotizaciones = dataCotizaciones.filter(
-        (item) => item.NumeroCotizacion !== cotizacion.NumeroCotizacion
-      );
-      setDataCotizaciones(nuevasCotizaciones);
+      console.log("cotizacion", cotizacion.Equipos);
+
+      cotizacion.Equipos.forEach(async (equipo) => {
+        console.log("equipoCodigo", equipo.codigoEquipo);
+
+        const equipoRef = query(
+          collection(firestore, "EquipoInventory"),
+          where("CodigoEquipo", "==", equipo.codigoEquipo)
+        );
+
+        const querySnapshot = await getDocs(equipoRef);
+        let dataEquipo = [];
+
+        querySnapshot.forEach((doc) => {
+          console.log("equipoRef", doc.data());
+          dataEquipo = [doc.id, doc.data().Stock];
+        });
+
+        updateDoc(doc(firestore, "EquipoInventory", dataEquipo[0]), {
+          Stock: dataEquipo[1] + equipo.cantidad,
+        });
+      });
 
       toast.success("Cotización eliminada exitosamente.");
     } catch (error) {

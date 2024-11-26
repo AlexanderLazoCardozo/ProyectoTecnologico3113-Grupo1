@@ -236,6 +236,7 @@ const NuevaCotizacion = () => {
 
         const montoTotal = calcularMontoTotal();
 
+        const docUID = doc(collection(firestore, "DataCotizaciones")).id;
         const cotizacion = {
           Cliente: datosCliente,
           CodigoCli: newCodigoCli,
@@ -252,12 +253,13 @@ const NuevaCotizacion = () => {
           FechaVencimiento: fechaVencimiento,
           NumeroCotizacion: nuevoNumeroCotizacion,
           Status: "En espera",
+          UID: docUID,
         };
         console.log("cotizacion", cotizacion);
 
         try {
           await setDoc(
-            doc(collection(firestore, "DataCotizaciones")),
+            doc(collection(firestore, "DataCotizaciones"), docUID),
             cotizacion
           );
 
@@ -360,6 +362,8 @@ const NuevaCotizacion = () => {
 
         console.log("datosCli2", datosCliente);
 
+        const docUID = doc(collection(firestore, "DataCotizaciones")).id;
+
         const cotizacion = {
           Cliente: datosCliente,
           CodigoCli: searchResults[0].CodigoCli,
@@ -376,11 +380,12 @@ const NuevaCotizacion = () => {
           FechaVencimiento: fechaVencimiento,
           NumeroCotizacion: nuevoNumeroCotizacion,
           Status: "En espera",
+          UID: docUID,
         };
 
         try {
           await setDoc(
-            doc(collection(firestore, "DataCotizaciones")),
+            doc(collection(firestore, "DataCotizaciones"), docUID),
             cotizacion
           );
 

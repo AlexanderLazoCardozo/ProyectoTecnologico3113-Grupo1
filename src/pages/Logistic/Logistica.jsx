@@ -43,7 +43,7 @@ const Logistica = ({ user }) => {
         }}
       >
         <div>
-          <h1> Inventarioasd Fogel </h1>
+          <h1> Inventario Fogel </h1>
 
           <Button onClick={getDataInventory}>Conectar</Button>
         </div>
