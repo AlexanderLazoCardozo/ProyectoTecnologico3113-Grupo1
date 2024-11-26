@@ -60,7 +60,14 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
       </thead>
       <tbody>
         {dataFiltrada.map((item, index) => (
-          <tr key={index}>
+          <tr
+            key={index}
+            style={{
+              backgroundColor: item.Status === "Vencida" ? "#f0f0f0" : "white",
+              color: item.Status === "Vencida" ? "gray" : "inherit",
+              pointerEvents: item.Status === "Vencida" ? "none" : "auto",
+            }}
+          >
             <td>{item.NumeroCotizacion}</td>
             <td>{item.FechaEmision}</td>
             <td>{item.FechaVencimiento}</td>
@@ -78,13 +85,20 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
             <td>
               <Button
                 icon
-                onClick={item.Status !== "Facturado" ? () => facturar(item) : null}
-                disabled={item.Status === "Facturado" || item.Status === "Vencida"}
+                onClick={
+                  item.Status !== "Facturado" ? () => facturar(item) : null
+                }
+                disabled={
+                  item.Status === "Facturado" || item.Status === "Vencida"
+                }
               >
                 <Icon
                   name="file invoice"
                   style={{
-                    color: item.Status === "Facturado" || item.Status === "Vencida" ? "gray" : "black",
+                    color:
+                      item.Status === "Facturado" || item.Status === "Vencida"
+                        ? "gray"
+                        : "black",
                   }}
                 />
               </Button>
@@ -92,8 +106,10 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
             <td>
               <Button
                 icon
-                onClick={() => Eliminar(item)} 
-                disabled={item.Status === "Facturado" || item.Status === "Vencida"} 
+                onClick={() => Eliminar(item)}
+                disabled={
+                  item.Status === "Facturado" || item.Status === "Vencida"
+                }
               >
                 <Icon name="trash" style={{ color: "red" }} />
               </Button>
