@@ -15,6 +15,7 @@ import NavTab from "../../components/NavTab";
 import LogoEmpresa from "./../../assets/factura-foguel.png";
 import DropdownFiltro from "../../components/Tabla/DropdownFiltro";
 import Buscador from "../../components/Buscador";
+import html2pdf from "html2pdf.js";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -32,21 +33,39 @@ const TablaFacturas = ({ user }) => {
     getQuery.forEach((doc) => {
       facturas.push(doc.data());
     });
-    setFacturasGenerales(facturas); // Solo actualizar una vez
+    setFacturasGenerales(facturas);
     setFacturasBuscadas(facturas);
-    console.log(facturas);
   };
 
   const handleModalOpen = (index) => {
-    setOpenDetallF(index); // Guardar el índice de la factura seleccionada
+    setOpenDetallF(index);
   };
 
   const handleModalClose = () => {
-    setOpenDetallF(null); // Cerrar el modal
+    setOpenDetallF(null);
+  };
+
+  const downloadPDF = (index) => {
+    const element = document.getElementById(`factura-modal-container-${index}`);
+
+    if (!element) {
+      console.error("No se encontró el contenedor del modal.");
+      return;
+    }
+
+    const options = {
+      margin: [10, 10, 10, 10],
+      filename: `${facturasFiltradas[index].NumeroFactura}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, logging: false },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    html2pdf().from(element).set(options).save();
   };
 
   useEffect(() => {
-    facturasCall(); // Llamada inicial para cargar las facturas
+    facturasCall();
   }, []);
 
   const facturasFiltradas = useMemo(
@@ -117,146 +136,147 @@ const TablaFacturas = ({ user }) => {
                     <Modal
                       onClose={handleModalClose}
                       onOpen={() => handleModalOpen(index)}
-                      open={openDetallF === index} // Solo abrir el modal de la factura seleccionada
+                      open={openDetallF === index}
                       trigger={<Button>Ver</Button>}
                     >
-                      <Modal.Header className="modal-header">
-                        <img
-                          src={LogoEmpresa}
-                          alt="Logo de la Empresa"
-                          className="logo"
-                        />
-                        <div className="header-right">
-                          <div className="ruc-info">RUC: 20551020313</div>
-                          <div className="boleta-info">
-                            {item.Cliente.tipoDocumento !== "RUC"
-                              ? "Boleta"
-                              : "Factura"}{" "}
-                            Electrónica
+                      <div id={`factura-modal-container-${index}`}>
+                        <Modal.Header className="modal-header">
+                          <img
+                            src={LogoEmpresa}
+                            alt="Logo de la Empresa"
+                            className="logo"
+                          />
+                          <div className="header-right">
+                            <div className="ruc-info">RUC: 20551020313</div>
+                            <div className="boleta-info">
+                              {item.Cliente.tipoDocumento !== "RUC"
+                                ? "Boleta"
+                                : "Factura"}{" "}
+                              Electrónica
+                            </div>
+                            <div className="codigo-boleta">
+                              {item.NumeroFactura}
+                            </div>
                           </div>
-                          <div className="codigo-boleta">
-                            {item.NumeroFactura}
-                          </div>
-                        </div>
-                      </Modal.Header>
+                        </Modal.Header>
 
-                      <div className="cabezal">
-                        Dirección Fiscal: CAL. SANTA LUCIA NRO. 336 URB.
-                        INDUSTRIAL LA AURORA;
-                        <br />
-                        LIMA - LIMA - ATE
-                        <br />
-                        <br />
-                        Dirección de establecimiento: CALLE SANTA LUCIA 336
-                        <br />
-                        Ate - Lima - Lima
-                        <br />
-                        E-mail: chuisa@servifogel.com /
-                        abustamante@servifogel.com / gvalverde@servidogel.com
-                      </div>
-
-                      <ModalContent className="modal-content">
-                        <div className="grid-container">
-                          <div className="grid-item label">
-                            {item.Cliente.tipoDocumento !== "RUC"
-                              ? "Documento"
-                              : "RUC"}
-                            : {item.Cliente.ruc}
-                          </div>
-                          <div className="grid-item label">
-                            Cliente:{" "}
-                            {item.Cliente.razonSocial
-                              ? item.Cliente.razonSocial
-                              : item.Cliente.nombres}
-                          </div>
-                          <div>
-                            <strong>Fecha de Emisión: </strong>
-                            {item.FechaEmision}
-                          </div>
-                          <div>
-                            <strong>Fecha de Vencimiento: </strong>
-                            {item.FechaVencimiento}
-                          </div>
+                        <div className="cabezal">
+                          Dirección Fiscal: CAL. SANTA LUCIA NRO. 336 URB.
+                          INDUSTRIAL LA AURORA;
+                          <br />
+                          LIMA - LIMA - ATE
+                          <br />
+                          <br />
+                          Dirección de establecimiento: CALLE SANTA LUCIA 336
+                          <br />
+                          Ate - Lima - Lima
+                          <br />
+                          E-mail: chuisa@servifogel.com /
+                          abustamante@servifogel.com / gvalverde@servidogel.com
                         </div>
 
-                        <table className="ui celled table">
-                          <thead>
-                            <tr>
-                              <th>Cantidad</th>
-                              <th>Código</th>
-                              <th>Descripción</th>
-                              <th>Precio Unitario</th>
-                              <th>Importe</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {item.Equipos.map((equipo, index) => (
-                              <tr key={index}>
-                                <td data-label="Cantidad">{equipo.cantidad}</td>
-                                <td data-label="Código">
-                                  {equipo.codigoEquipo}
-                                </td>
-                                <td data-label="Descripción">
-                                  {equipo.descripcion}
-                                </td>
-                                <td data-label="Precio Unitario">
-                                  S/{equipo.precioUnitario}
-                                </td>
-                                <td data-label="Importe">S/{equipo.total}</td>
+                        <ModalContent className="modal-content">
+                          <div className="grid-container">
+                            <div className="grid-item label">
+                              {item.Cliente.tipoDocumento !== "RUC"
+                                ? "Documento"
+                                : "RUC"}{" "}
+                              : {item.Cliente.ruc}
+                            </div>
+                            <div className="grid-item label">
+                              Cliente:{" "}
+                              {item.Cliente.razonSocial
+                                ? item.Cliente.razonSocial
+                                : item.Cliente.nombres}
+                            </div>
+                            <div>
+                              <strong>Fecha de Emisión: </strong>
+                              {item.FechaEmision}
+                            </div>
+                            <div>
+                              <strong>Fecha de Vencimiento: </strong>
+                              {item.FechaVencimiento}
+                            </div>
+                          </div>
+
+                          <table className="ui celled table">
+                            <thead>
+                              <tr>
+                                <th>Cantidad</th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Precio Unitario</th>
+                                <th>Importe</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {item.Equipos.map((equipo, index) => (
+                                <tr key={index}>
+                                  <td>{equipo.cantidad}</td>
+                                  <td>{equipo.codigoEquipo}</td>
+                                  <td>{equipo.descripcion}</td>
+                                  <td>{equipo.precioUnitario}</td>
+                                  <td>{equipo.total}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
 
-                        <div className="MasterCont">
-                          <div className="SemiMaster">
-                            <div className="grid-container2">
-                              <div className="">Observaciones:</div>
-                              <div className="">
-                                Cotización N° {item.NumeroCotizacion}
+                          <div className="MasterCont">
+                            <div className="SemiMaster">
+                              <div className="grid-container2">
+                                <div className="">Observaciones:</div>
+                                <div className="">
+                                  Cotización N° {item.NumeroCotizacion}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="SemiMaster2">
+                              <div className="salidas">
+                                <div className="salidasc">
+                                  Total Op. Gravada
+                                </div>
+                                <div className="salidasc">S/</div>
+                                <div className="salidasc">
+                                  {item.SubTotal.toFixed(2)}
+                                </div>
+                              </div>
+                              <div className="salidas">
+                                <div className="salidasc">Total IGV 18%</div>
+                                <div className="salidasc">S/</div>
+                                <div className="salidasc">
+                                  {item.IGV.toFixed(2)}
+                                </div>
+                              </div>
+                              <div className="salidas">
+                                <div className="salidasc">Importe Total</div>
+                                <div className="salidasc">S/</div>
+                                <div className="salidasc">
+                                  {item.MontoTotal.toFixed(2)}
+                                </div>
                               </div>
                             </div>
                           </div>
 
-                          <div className="SemiMaster2">
-                            <div className="salidas">
-                              <div className="salidasc">Total Op. Gravada</div>
-                              <div className="salidasc">S/</div>
-                              <div className="salidasc">
-                                {item.SubTotal.toFixed(2)}
-                              </div>
-                            </div>
-                            <div className="salidas">
-                              <div className="salidasc">Total IGV 18%</div>
-                              <div className="salidasc">S/</div>
-                              <div className="salidasc">
-                                {item.IGV.toFixed(2)}
-                              </div>
-                            </div>
-                            <div className="salidas">
-                              <div className="salidasc">Importe Total</div>
-                              <div className="salidasc">S/</div>
-                              <div className="salidasc">
-                                {item.MontoTotal.toFixed(2)}
-                              </div>
-                            </div>
+                          <div className="lineadivisoria">
+                            <p>
+                              Representación impresa del Comprobante Electrónico
+                              puede ser consultado en
+                              https://proyecto-tecnologico3113-grupo1.vercel.app/
+                              <br />
+                              AUTORIZADO MEDIANTE RESOLUCION DE INTENDENCIA -
+                              N°034-005-0011914/SUNAT
+                            </p>
                           </div>
-                        </div>
-
-                        <div className="lineadivisoria">
-                          <p>
-                            Representación impresa del Comprobante Electrónico
-                            puede ser consultado en
-                            https://proyecto-tecnologico3113-grupo1.vercel.app/
-                            <br />
-                            AUTORIZADO MEDIANTE RESOLUCION DE INTENDENCIA -
-                            N°034-005-0011914/SUNAT
-                          </p>
-                        </div>
-                        <br />
-                      </ModalContent>
+                          <br />
+                        </ModalContent>
+                      </div>
                       <ModalActions>
-                        <Button color="black" onClick={handleModalClose}>
+                        <Button color="blue" onClick={() => downloadPDF(index)}>
+                          Descargar Factura
+                        </Button>
+                        <Button color="red" onClick={handleModalClose}>
                           Cerrar
                         </Button>
                       </ModalActions>
