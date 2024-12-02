@@ -102,14 +102,7 @@ const TablaFacturas = ({ user }) => {
               <tr>
                 <th>N° Factura</th>
                 <th>N° Cotizacion</th>
-                <th>
-                  <DropdownFiltro
-                    header="Cliente"
-                    campo="Cliente.CodigoCli"
-                    tableData={facturasGenerales}
-                    setFiltro={setCodClienteFiltro}
-                  />
-                </th>
+                <th>Código de Cliente</th>
                 <th>Monto Total</th>
                 <th>
                   <DropdownFiltro
