@@ -35,14 +35,7 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
             />
           </th>
           <th>Fecha de Vencimiento</th>
-          <th>
-            <DropdownFiltro
-              tableData={data}
-              header="Código de Cliente"
-              campo="CodigoCli"
-              setFiltro={setCodClienteFiltro}
-            />
-          </th>
+          <th>Código de Cliente</th>
           <th>Nombre de Cliente</th>
           <th>Monto Total</th>
           <th>
