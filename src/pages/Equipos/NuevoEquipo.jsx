@@ -1,14 +1,12 @@
 import {
   addDoc,
   collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
   query,
-  setDoc,
   updateDoc,
   where,
+  getDocs,
+  doc,
+  getFirestore,
 } from "firebase/firestore";
 import React, { useState } from "react";
 import {
@@ -31,7 +29,6 @@ const NuevoEquipo = () => {
   const [productForm, setProductForm] = useState({
     codigoProducto: "",
     numSerie: "",
-    status: "",
   });
 
   const handleChange = (e, data) => {
@@ -42,6 +39,11 @@ const NuevoEquipo = () => {
   };
 
   const crearProducto = async () => {
+    if (!productForm.codigoProducto || !productForm.numSerie) {
+      toast.error("Todos los campos son obligatorios.");
+      return;
+    }
+
     toast.info("Procesando equipo...");
 
     try {
@@ -52,12 +54,15 @@ const NuevoEquipo = () => {
       const fechaActual = new Date();
       const fechaFormatoEsp = fechaActual.toLocaleDateString("es-ES");
 
-      await addDoc(ref, { ...productForm, fechaCreacion: fechaFormatoEsp });
+      await addDoc(ref, {
+        ...productForm,
+        status: "En Almacen",
+        fechaCreacion: fechaFormatoEsp,
+      });
 
       setProductForm({
         codigoProducto: "",
         numSerie: "",
-        status: "",
       });
 
       const refInventory = query(
@@ -73,15 +78,16 @@ const NuevoEquipo = () => {
         dataEquipo = [doc.id, doc.data().Stock];
       });
 
-      console.log(dataEquipo);
-
-      updateDoc(doc(firestore, "EquipoInventory", dataEquipo[0]), {
-        Stock: dataEquipo[1] + 1,
-      });
+      if (dataEquipo.length > 0) {
+        await updateDoc(doc(firestore, "EquipoInventory", dataEquipo[0]), {
+          Stock: dataEquipo[1] + 1,
+        });
+      }
 
       toast.success("Equipo agregado exitosamente.");
     } catch (error) {
       console.log(error);
+      toast.error("Hubo un error al agregar el equipo.");
     }
   };
 
@@ -107,7 +113,7 @@ const NuevoEquipo = () => {
                 {
                   key: "codigo",
                   text: "- Selecciona Codigo -",
-                  value: "Sin Datos",
+                  value: "",
                 },
                 { key: "VE-28-V1", text: "VE-28-V1", value: "VE-28-V1" },
                 { key: "CR-23-A-V1", text: "CR-23-A-V1", value: "CR-23-A-V1" },
@@ -136,28 +142,10 @@ const NuevoEquipo = () => {
               onChange={handleChange}
               value={productForm.numSerie}
             />
-
-            <Form.Select
-              fluid
-              label="Status"
-              options={[
-                {
-                  key: "stat",
-                  text: "- Selecciona Status -",
-                  value: "Sin Datos",
-                },
-                { key: "EnAlmacen", text: "En Almacen", value: "En Almacen" },
-                { key: "Despachado", text: "Despachado", value: "Despachado" },
-              ]}
-              placeholder="Status"
-              id="status"
-              onChange={handleChange}
-              value={productForm.status}
-            />
-            <Button positive onClick={crearProducto}>
-              Agregar
-            </Button>
           </Form.Group>
+          <Button positive onClick={crearProducto}>
+            Agregar
+          </Button>
         </Form>
       </ModalContent>
       <ModalActions>
