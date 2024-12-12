@@ -36,7 +36,6 @@ const VencimientoCotizaciones = () => {
           fechaVencimientoDate < fechaActual &&
           cotizacion.Status !== "Vencida"
         ) {
-          // Actualizar el estado de la cotización
           const cotizacionRef = doc(db, "DataCotizaciones", docSnapshot.id);
           await updateDoc(cotizacionRef, {
             Status: "Vencida",

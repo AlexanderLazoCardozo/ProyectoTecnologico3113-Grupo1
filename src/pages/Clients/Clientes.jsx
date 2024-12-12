@@ -43,7 +43,6 @@ const Clientes = ({ user }) => {
     try {
       toast.info("Conectando base...");
 
-      //LLamar datos del cliente
       const conectarBase = query(
         collection(firestore, "DataComercialOficial"),
         where("CodigoCli", "==", busquedaCli)
@@ -56,15 +55,8 @@ const Clientes = ({ user }) => {
       });
       setDatosCli(documentosFind);
 
-      // if (documentosFind.length === 1) {
-      //   setClienteSeleccionado(documentosFind[0]);
-      // } else {
-      //   setClienteSeleccionado(null);
-      // }
-
       console.log("Datos del Cliente", documentosFind);
 
-      //LLamar a sus cotizaciones
       const conectarBaseCotiz = query(
         collection(firestore, "DataCotizaciones"),
         where("CodigoCli", "==", busquedaCli)
@@ -79,7 +71,6 @@ const Clientes = ({ user }) => {
 
       console.log("Cotizaciones del cliente", documentosFindCotiz);
 
-      //Llamar a productos adquiridos
       const conectarBaseAdquir = query(
         collection(firestore, "EquipoOutbound"),
         where("CodigoCli", "==", busquedaCli)
@@ -107,9 +98,9 @@ const Clientes = ({ user }) => {
   const customStyles = {
     headCells: {
       style: {
-        backgroundColor: "grey", // Fondo verde
-        color: "white", // Texto blanco
-        fontWeight: "bold", // Texto en negrita
+        backgroundColor: "grey",
+        color: "white",
+        fontWeight: "bold",
       },
     },
   };
@@ -261,7 +252,7 @@ const Clientes = ({ user }) => {
                 </Card>
               </Segment>
 
-              {/* //Productos en Vigencia */}
+              {/* Productos en Vigencia */}
               <Segment>
                 <Header as="h3">Equipos Contratados</Header>
                 <Card fluid>
