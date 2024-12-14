@@ -3,7 +3,7 @@ import DetalleCotizacion from "../DetalleCotizacion/DetalleCotizacion";
 import { useMemo, useState } from "react";
 import DropdownFiltro from "../../components/Tabla/DropdownFiltro";
 
-const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
+const CotizacionesTabla = ({ data, setSelectedCotizacion, Eliminar }) => {
   const [codClienteFiltro, setCodClienteFiltro] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [fechaCotizacionFiltro, setFechaCotizacionFiltro] = useState("");
@@ -36,11 +36,7 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
 
   return (
     <>
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        size="small"
-      >
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} size="small">
         <Modal.Header>Confirmar eliminación</Modal.Header>
         <Modal.Content>
           <p>¿Realmente deseas eliminar la cotización?</p>
@@ -93,7 +89,8 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
             <tr
               key={index}
               style={{
-                backgroundColor: item.Status === "Vencida" ? "#f0f0f0" : "white",
+                backgroundColor:
+                  item.Status === "Vencida" ? "#f0f0f0" : "white",
                 color: item.Status === "Vencida" ? "gray" : "inherit",
                 pointerEvents: item.Status === "Vencida" ? "none" : "auto",
               }}
@@ -116,7 +113,9 @@ const CotizacionesTabla = ({ data, facturar, Eliminar }) => {
                 <Button
                   icon
                   onClick={
-                    item.Status !== "Facturado" ? () => facturar(item) : null
+                    item.Status !== "Facturado"
+                      ? () => setSelectedCotizacion(item)
+                      : null
                   }
                   disabled={
                     item.Status === "Facturado" || item.Status === "Vencida"

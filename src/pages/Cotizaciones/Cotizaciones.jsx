@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import NavTab from "../../components/NavTab";
 import firebaseApp from "../../firebase/credenciales";
 import {
@@ -11,9 +11,10 @@ import {
   deleteDoc,
   where,
   updateDoc,
+  getDocs,
 } from "firebase/firestore";
-import { Button, Card, Container, Header } from "semantic-ui-react";
-import { ToastContainer, toast } from "react-toastify";
+import { Card, Container, Header } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
@@ -24,10 +25,9 @@ import VencimientoCotizaciones from "../../components/TiempoCotizacion";
 const firestore = getFirestore(firebaseApp);
 
 const Cotizaciones = ({ user }) => {
-  const [open, setOpen] = React.useState(false);
   const [dataCotizaciones, setDataCotizaciones] = useState([]);
   const [cotizacionesFiltradas, setCotizacionesFiltradas] = useState([]);
-  const [selectedFactura, setSelectedFactura] = useState(null);
+  const [selectedCotizacion, setSelectedCotizacion] = useState(null);
 
   useEffect(() => {
     toast.info("Conectando base...");
@@ -48,12 +48,8 @@ const Cotizaciones = ({ user }) => {
     return () => unsubscribe();
   }, []);
 
-  const facturar = (factura) => {
-    setSelectedFactura(factura);
-  };
-
   const closeFacturaForm = () => {
-    setSelectedFactura(null);
+    setSelectedCotizacion(null);
   };
 
   const handleUpdateStatus = () => {
@@ -118,13 +114,13 @@ const Cotizaciones = ({ user }) => {
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
           <CotizacionesTabla
             data={dataCotizaciones}
-            facturar={facturar}
+            setSelectedCotizacion={setSelectedCotizacion}
             Eliminar={EliminarCotizacion}
           />
         </Container>
-        {selectedFactura && (
+        {selectedCotizacion && (
           <NuevaFactura
-            factura={selectedFactura}
+            cotizacion={selectedCotizacion}
             onClose={closeFacturaForm}
             onUpdateStatus={handleUpdateStatus}
           />
