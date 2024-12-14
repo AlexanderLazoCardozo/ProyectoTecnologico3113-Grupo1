@@ -79,21 +79,6 @@ const Clientes = ({ user }) => {
 
       console.log("Cotizaciones del cliente", documentosFindCotiz);
 
-      //Llamar a productos adquiridos
-      const conectarBaseAdquir = query(
-        collection(firestore, "EquipoOutbound"),
-        where("CodigoCli", "==", busquedaCli)
-      );
-
-      const conectarSnapshotAdquir = await getDocs(conectarBaseAdquir);
-
-      const documentosFindAdquir = conectarSnapshotAdquir.docs.map((doc) => {
-        return doc.data();
-      });
-      setEquiposAdquiridos(documentosFindAdquir);
-
-      console.log("Equipos contratados del cliente", documentosFindAdquir);
-
       if (documentosFind.length === 0) {
         toast.info("Cliente no encontrado o inexistente.");
       } else {
@@ -205,7 +190,7 @@ const Clientes = ({ user }) => {
           {datosCli && (
             <Grid.Column width={8} mobile={16} tablet={8} computer={8}>
               <Segment>
-                <Header as="h3">Cotizaciones del CLiente</Header>
+                <Header as="h3">Cotizaciones del Cliente</Header>
                 <Card fluid>
                   <Card.Content>
                     <Card.Header></Card.Header>
@@ -251,42 +236,6 @@ const Clientes = ({ user }) => {
                           },
                         ]}
                         data={cotizacionesCli}
-                        pagination
-                        customStyles={customStyles}
-                        paginationPerPage={5}
-                        dense
-                      />
-                    </Card.Description>
-                  </Card.Content>
-                </Card>
-              </Segment>
-
-              {/* //Productos en Vigencia */}
-              <Segment>
-                <Header as="h3">Equipos Contratados</Header>
-                <Card fluid>
-                  <Card.Content>
-                    <Card.Header></Card.Header>
-                    <Card.Description>
-                      <DataTable
-                        columns={[
-                          {
-                            name: "CodigoEquipo",
-                            selector: (row) => row.CodigoEquipo,
-                            sortable: true,
-                          },
-                          {
-                            name: "Fecha Adquisición",
-                            selector: (row) => row.FechaSalida || "N/A",
-                            sortable: true,
-                          },
-                          {
-                            name: "Fecha Devolución",
-                            selector: (row) => row.FechaDevolucion || "N/A",
-                            sortable: true,
-                          },
-                        ]}
-                        data={equiposAdquiridos}
                         pagination
                         customStyles={customStyles}
                         paginationPerPage={5}

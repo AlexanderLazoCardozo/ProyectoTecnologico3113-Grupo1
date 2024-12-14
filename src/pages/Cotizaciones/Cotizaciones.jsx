@@ -11,8 +11,18 @@ import {
   deleteDoc,
   where,
   updateDoc,
+  getDocs,
 } from "firebase/firestore";
-import { Button, Card, Container, Header } from "semantic-ui-react";
+import {
+  Button,
+  Card,
+  Container,
+  Header,
+  Icon,
+  Modal,
+  ModalActions,
+  ModalContent,
+} from "semantic-ui-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
@@ -60,6 +70,14 @@ const Cotizaciones = ({ user }) => {
     console.log("Estado de la cotización actualizado");
   };
 
+  const [openModalConfirmacion, setOpenModalConfirmacion] = useState(false);
+  const [cotizSeleccionada, setCotizSeleccionada] = useState(null);
+
+  const confirmarEliminacion = (cotizacion) => {
+    setOpenModalConfirmacion(true);
+    setCotizSeleccionada(cotizacion);
+  };
+
   const EliminarCotizacion = async (cotizacion) => {
     try {
       const cotizacionRef = doc(firestore, "DataCotizaciones", cotizacion.UID);
@@ -82,6 +100,7 @@ const Cotizaciones = ({ user }) => {
           console.log("equipoRef", doc.data());
           dataEquipo = [doc.id, doc.data().Stock];
         });
+        console.log("dataEquipo", dataEquipo);
 
         updateDoc(doc(firestore, "EquipoInventory", dataEquipo[0]), {
           Stock: dataEquipo[1] + equipo.cantidad,
@@ -89,6 +108,7 @@ const Cotizaciones = ({ user }) => {
       });
 
       toast.success("Cotización eliminada exitosamente.");
+      setOpenModalConfirmacion(false);
     } catch (error) {
       console.error("Error al eliminar la cotización:", error);
       toast.error("Hubo un error al eliminar la cotización.");
@@ -97,6 +117,38 @@ const Cotizaciones = ({ user }) => {
 
   return (
     <NavTab user={user}>
+      <Modal
+        basic
+        onClose={() => setOpenModalConfirmacion(false)}
+        onOpen={() => setOpenModalConfirmacion(true)}
+        open={openModalConfirmacion}
+        size="small"
+      >
+        <Header icon>
+          <Icon name="trash" />
+          Eliminar Cotizacion
+        </Header>
+        <ModalContent style={{ textAlign: "center", fontSize: "20px" }}>
+          ¿Estas seguro de que deseas eliminar esta cotización?
+        </ModalContent>
+        <ModalActions style={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            basic
+            color="red"
+            inverted
+            onClick={() => setOpenModalConfirmacion(false)}
+          >
+            <Icon name="remove" /> No
+          </Button>
+          <Button
+            color="green"
+            inverted
+            onClick={() => EliminarCotizacion(cotizSeleccionada)}
+          >
+            <Icon name="checkmark" /> Si
+          </Button>
+        </ModalActions>
+      </Modal>
       <Card
         style={{
           margin: "20px",
@@ -119,7 +171,7 @@ const Cotizaciones = ({ user }) => {
           <CotizacionesTabla
             data={dataCotizaciones}
             facturar={facturar}
-            Eliminar={EliminarCotizacion}
+            Eliminar={confirmarEliminacion}
           />
         </Container>
         {selectedFactura && (

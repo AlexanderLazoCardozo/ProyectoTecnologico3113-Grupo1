@@ -511,11 +511,6 @@ const NuevaCotizacion = () => {
                     options={[
                       { label: "RUC", value: "RUC" },
                       { label: "DNI", value: "DNI" },
-                      {
-                        label: "CARNET DE EXTRANJERIA",
-                        value: "CARNET DE EXTRANJERIA",
-                      },
-                      { label: "PASAPORTE", value: "PASAPORTE" },
                     ]}
                     placeholder="Seleccionar tipo de documento"
                     onChange={handleSelectTipoDocumento}

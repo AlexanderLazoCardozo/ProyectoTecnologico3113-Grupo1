@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.120.4",
+    "@react-three/fiber": "^8.17.10",
     "final-form": "^4.20.10",
     "firebase": "^10.13.2",
     "install": "^0.13.0",
