@@ -19,7 +19,7 @@ const Buscador = ({ campo, lista, setListaFiltrada, placeholder }) => {
         color="black"
         onClick={() =>
           setListaFiltrada(
-            lista.filter((item) => item[campo].includes(busqueda))
+            lista.filter((item) => item[campo]?.includes(busqueda))
           )
         }
         style={{ marginLeft: "10px" }}

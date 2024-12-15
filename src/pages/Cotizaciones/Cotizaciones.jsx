@@ -113,7 +113,7 @@ const Cotizaciones = ({ user }) => {
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
           <CotizacionesTabla
-            data={dataCotizaciones}
+            data={cotizacionesFiltradas}
             setSelectedCotizacion={setSelectedCotizacion}
             Eliminar={EliminarCotizacion}
           />
