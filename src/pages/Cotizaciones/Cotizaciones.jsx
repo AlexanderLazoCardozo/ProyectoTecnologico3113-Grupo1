@@ -37,6 +37,7 @@ const Cotizaciones = ({ user }) => {
   const [dataCotizaciones, setDataCotizaciones] = useState([]);
   const [cotizacionesFiltradas, setCotizacionesFiltradas] = useState([]);
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
+  const [selectedFactura, setSelectedFactura] = useState(null);
 
   useEffect(() => {
     toast.info("Conectando base...");
@@ -58,6 +59,7 @@ const Cotizaciones = ({ user }) => {
   }, []);
 
   const closeFacturaForm = () => {
+    setSelectedFactura(null);
     setSelectedCotizacion(null);
   };
 
@@ -164,8 +166,8 @@ const Cotizaciones = ({ user }) => {
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
           <CotizacionesTabla
+            setSelectedCotizacion={setSelectedCotizacion}
             data={dataCotizaciones}
-            facturar={facturar}
             Eliminar={confirmarEliminacion}
           />
         </Container>
