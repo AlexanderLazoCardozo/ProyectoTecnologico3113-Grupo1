@@ -85,9 +85,6 @@ const TablaFacturas = ({ user }) => {
       <Card style={{ margin: "20px", width: "auto", padding: "20px" }}>
         <Header as="h1">Facturas</Header>
         <div>
-          <Button color="yellow" onClick={facturasCall}>
-            Conectar Facturas
-          </Button>
           <Buscador
             campo="NumeroFactura"
             lista={facturasGenerales}
