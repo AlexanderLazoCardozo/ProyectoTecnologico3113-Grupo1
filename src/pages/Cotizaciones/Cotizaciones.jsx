@@ -13,7 +13,6 @@ import {
   updateDoc,
   getDocs,
 } from "firebase/firestore";
-<<<<<<< HEAD
 import {
   Button,
   Card,
@@ -25,10 +24,6 @@ import {
   ModalContent,
 } from "semantic-ui-react";
 import { ToastContainer, toast } from "react-toastify";
-=======
-import { Card, Container, Header } from "semantic-ui-react";
-import { toast } from "react-toastify";
->>>>>>> 78b70cc2c3bbf6f0404b332bfa01384085a61439
 import "react-toastify/dist/ReactToastify.css";
 import CotizacionesTabla from "./Tabla";
 import NuevaCotizacion from "./NuevaCotizacion";
@@ -169,15 +164,9 @@ const Cotizaciones = ({ user }) => {
         <br />
         <Container style={{ maxHeight: "400px", overflowY: "auto" }}>
           <CotizacionesTabla
-<<<<<<< HEAD
             data={dataCotizaciones}
             facturar={facturar}
             Eliminar={confirmarEliminacion}
-=======
-            data={cotizacionesFiltradas}
-            setSelectedCotizacion={setSelectedCotizacion}
-            Eliminar={EliminarCotizacion}
->>>>>>> 78b70cc2c3bbf6f0404b332bfa01384085a61439
           />
         </Container>
         {selectedCotizacion && (
