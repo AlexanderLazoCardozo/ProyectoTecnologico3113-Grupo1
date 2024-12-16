@@ -60,7 +60,7 @@ const DetalleCotizacion = ({ cotizacion }) => {
   };
 
   const handleModalClose = () => {
-    setOpenDetallF(null);
+    setOpen(false);
   };
 
   return (

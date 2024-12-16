@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Modal } from "semantic-ui-react";
 import firebaseApp from "../../firebase/credenciales";
 import LogoEmpresa from "./../../assets/factura-foguel.png";
@@ -16,28 +16,36 @@ import { getFirestore } from "firebase/firestore";
 
 const firestore = getFirestore(firebaseApp);
 
-const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
+const PREFIJOS = {
+  RUC: "FAC",
+  DNI: "BOL",
+};
+
+const NuevaFactura = ({ cotizacion, onClose, onUpdateStatus }) => {
   const [loading, setLoading] = useState(false);
   const [numeroFactura, setNumeroFactura] = useState("");
 
   const fechaHoy = new Date().toISOString().split("T")[0];
   const Moneda = "Soles";
 
-  // Factura
-  const generateInvoiceNumber = async () => {
-    const invoicesRef = collection(firestore, "FacturacionOficial");
-    const snapshot = await getDocs(invoicesRef);
-    const invoiceCount = snapshot.size;
-    const newInvoiceNumber = `FAC-${String(invoiceCount + 1).padStart(3, "0")}`;
-    setNumeroFactura(newInvoiceNumber);
-  };
-
   useEffect(() => {
-    generateInvoiceNumber();
-  }, []);
+    const generarNumeroFactura = async () => {
+      const invoicesRef = collection(firestore, "FacturacionOficial");
+      const snapshot = await getDocs(invoicesRef);
+      const facturasDelMismoTipo = snapshot.docs.filter(
+        (c) =>
+          c.get("Cliente.tipoDocumento") === cotizacion.Cliente.tipoDocumento
+      );
+      const id = String(facturasDelMismoTipo.length + 1).padStart(3, "0");
+      const prefijo = PREFIJOS[cotizacion.Cliente.tipoDocumento];
+      setNumeroFactura(`${prefijo}-${id}`);
+    };
+
+    void generarNumeroFactura();
+  }, [cotizacion.Cliente.tipoDocumento]);
 
   // Calcular subtotal, IGV y total
-  const subtotal = factura.Equipos.reduce(
+  const subtotal = cotizacion.Equipos.reduce(
     (acc, equipo) => acc + equipo.total,
     0
   );
@@ -45,12 +53,12 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
   const total = subtotal + igv;
 
   const manageEquipos = async () => {
-    for (let i = 0; i < factura.Equipos.length; i++) {
-      let codigoE = factura.Equipos[i].codigoEquipo;
-      let cant = factura.Equipos[i].cantidad;
+    for (let i = 0; i < cotizacion.Equipos.length; i++) {
+      let codigoE = cotizacion.Equipos[i].codigoEquipo;
+      let cant = cotizacion.Equipos[i].cantidad;
 
-      console.log("Equipos Codigo: ", factura.Equipos[i].codigoEquipo);
-      console.log("Equipos Cantidad: ", factura.Equipos[i].cantidad);
+      console.log("Equipos Codigo: ", cotizacion.Equipos[i].codigoEquipo);
+      console.log("Equipos Cantidad: ", cotizacion.Equipos[i].cantidad);
 
       const q = query(
         collection(firestore, "EquipoAlmacen"),
@@ -76,7 +84,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         try {
           updateDoc(doc.ref, {
             status: "Despachado",
-            UltimoPoseedor: factura.CodigoCli,
+            UltimoPoseedor: cotizacion.CodigoCli,
           });
 
           console.log("Actualizado");
@@ -92,14 +100,14 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
     setLoading(true);
     try {
       const clienteData = {
-        direccion: factura.Cliente.direccion,
-        ruc: factura.Cliente.ruc,
-        CodigoCli: factura.CodigoCli,
-        tipoDocumento: factura.Cliente.tipoDocumento,
-        razonSocial: factura.Cliente.razonSocial || undefined, // Usa razonSocial si existe; de lo contrario, será undefined
-        nombres: factura.Cliente.razonSocial
+        direccion: cotizacion.Cliente.direccion,
+        ruc: cotizacion.Cliente.ruc,
+        CodigoCli: cotizacion.CodigoCli,
+        tipoDocumento: cotizacion.Cliente.tipoDocumento,
+        razonSocial: cotizacion.Cliente.razonSocial || undefined, // Usa razonSocial si existe; de lo contrario, será undefined
+        nombres: cotizacion.Cliente.razonSocial
           ? undefined
-          : factura.Cliente.nombres, // Usa nombres solo si razonSocial no existe
+          : cotizacion.Cliente.nombres, // Usa nombres solo si razonSocial no existe
       };
 
       // Eliminar campos undefined de clienteData
@@ -111,7 +119,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
 
       await addDoc(collection(firestore, "FacturacionOficial"), {
         Cliente: clienteData,
-        Equipos: factura.Equipos.map((equipo) => ({
+        Equipos: cotizacion.Equipos.map((equipo) => ({
           cantidad: equipo.cantidad,
           codigoEquipo: equipo.codigoEquipo,
           descripcion: equipo.descripcion,
@@ -125,14 +133,14 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         IGV: igv,
         MontoTotal: total,
         Moneda: Moneda,
-        NumeroCotizacion: factura.NumeroCotizacion,
+        NumeroCotizacion: cotizacion.NumeroCotizacion,
         NumeroFactura: numeroFactura,
       });
 
       const cotizacionesRef = collection(firestore, "DataCotizaciones");
       const q = query(
         cotizacionesRef,
-        where("NumeroCotizacion", "==", factura.NumeroCotizacion)
+        where("NumeroCotizacion", "==", cotizacion.NumeroCotizacion)
       );
       const querySnapshot = await getDocs(q);
 
@@ -163,14 +171,14 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
         <div className="header-right">
           <div className="ruc-info">RUC: 20551020313</div>
           <div className="boleta-info">
-            {factura.Cliente.tipoDocumento != "RUC" ? "Boleta" : "Factura"}{" "}
+            {cotizacion.Cliente.tipoDocumento != "RUC" ? "Boleta" : "Factura"}{" "}
             Electrónica
           </div>
           <div className="codigo-boleta">{numeroFactura}</div>
         </div>
       </Modal.Header>
 
-      <div class="cabezal">
+      <div className="cabezal">
         <br></br>
         Direccion Fiscal: CAL. SANTA LUCIA NRO. 336 URB. INDUSTRIAL LA AURORA ;
         <br></br>
@@ -190,15 +198,15 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
       <Modal.Content className="modal-content">
         <div className="grid-container">
           <div className="grid-item label">
-            {factura.Cliente.tipoDocumento != "RUC" ? "Documento" : "RUC"}:{" "}
-            {factura.Cliente.ruc}
+            {cotizacion.Cliente.tipoDocumento != "RUC" ? "Documento" : "RUC"}:{" "}
+            {cotizacion.Cliente.ruc}
           </div>
           <div className="grid-item label">
             Cliente:
-            {factura.Cliente.razonSocial ? (
-              factura.Cliente.razonSocial
+            {cotizacion.Cliente.razonSocial ? (
+              cotizacion.Cliente.razonSocial
             ) : (
-              <>{factura.Cliente.nombres}</>
+              <>{cotizacion.Cliente.nombres}</>
             )}
           </div>
           <div>
@@ -222,7 +230,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
             </tr>
           </thead>
           <tbody>
-            {factura.Equipos.map((equipo, index) => (
+            {cotizacion.Equipos.map((equipo, index) => (
               <tr key={index}>
                 <td data-label="Cantidad">{equipo.cantidad}</td>
                 <td data-label="Código">{equipo.codigoEquipo}</td>
@@ -238,7 +246,9 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
           <div className="SemiMaster">
             <div className="grid-container2">
               <div className="">Observaciones:</div>
-              <div className="">Cotización N° {factura.NumeroCotizacion}</div>
+              <div className="">
+                Cotización N° {cotizacion.NumeroCotizacion}
+              </div>
             </div>
             <div className="grid-container2">
               BBVA - BANCO CONTINENTAL
@@ -253,11 +263,11 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
             </div>
           </div>
 
-          {factura.Cliente.tipoDocumento != "RUC" ? (
+          {cotizacion.Cliente.tipoDocumento != "RUC" ? (
             <>
               {" "}
               <div className="SemiMaster2">
-                <div class="salidas">
+                <div className="salidas">
                   <div className="salidasc">Importe Total (Incluye IGV)</div>
                   <div className="salidasc">S/</div>
                   <div className="salidasc">{total.toFixed(2)}</div>
@@ -268,17 +278,17 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
             <>
               {" "}
               <div className="SemiMaster2">
-                <div class="salidas">
+                <div className="salidas">
                   <div className="salidasc">Total Op. Gravada</div>
                   <div className="salidasc">S/</div>
                   <div className="salidasc">{subtotal.toFixed(2)}</div>
                 </div>
-                <div class="salidas">
+                <div className="salidas">
                   <div className="salidasc">Total IGV 18%</div>
                   <div className="salidasc">S/</div>
                   <div className="salidasc">{igv.toFixed(2)}</div>
                 </div>
-                <div class="salidas">
+                <div className="salidas">
                   <div className="salidasc">Importe Total</div>
                   <div className="salidasc">S/</div>
                   <div className="salidasc">{total.toFixed(2)}</div>
@@ -287,7 +297,7 @@ const NuevaFactura = ({ factura, onClose, onUpdateStatus }) => {
             </>
           )}
         </div>
-        <div class="lineadivisoria">
+        <div className="lineadivisoria">
           <p>
             Representación impresa del Comprobante Electrónico puede ser
             <br></br>
